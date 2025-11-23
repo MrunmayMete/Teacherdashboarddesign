@@ -8,22 +8,54 @@ import { ContentScannedPage } from './components/ContentScannedPage';
 import { NotesPage } from './components/NotesPage';
 import { ChatBot } from './components/ChatBot';
 import { StudentQuestionsPanel } from './components/StudentQuestionsPanel';
+import { Login } from './components/Login';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [filters, setFilters] = useState({
     class: 'All Classes',
     subject: 'All Subjects',
     students: [] as string[],
     topic: null as string | null,
-    engagementLevel: null as 'low' | 'medium' | 'high' | null
+    engagementLevel: null as 'low' | 'medium' | 'high' | null,
+    learningMode: 'All' as 'All' | 'Classroom' | 'Self-Learning'
   });
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'queries' | 'performance' | 'content' | 'notes'>('dashboard');
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    // Reset filters and page on logout
+    setFilters({
+      class: 'All Classes',
+      subject: 'All Subjects',
+      students: [],
+      topic: null,
+      engagementLevel: null,
+      learningMode: 'All'
+    });
+    setCurrentPage('dashboard');
+  };
+
+  // Show login page if not logged in
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-[72px] overflow-x-hidden">
       {/* Filter Bar */}
-      <FilterBar filters={filters} setFilters={setFilters} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <FilterBar 
+        filters={filters} 
+        setFilters={setFilters} 
+        currentPage={currentPage} 
+        setCurrentPage={setCurrentPage}
+        onLogout={handleLogout}
+      />
 
       <div className="flex relative">
         {/* Fixed Sidebar */}

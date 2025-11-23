@@ -143,6 +143,8 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
   ];
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  const ENGAGEMENT_COLORS = ['#10b981', '#f59e0b', '#ef4444']; // Green, Yellow, Red for engagement
+  const QUERY_NATURE_COLORS = ['#8b5cf6', '#3b82f6', '#ec4899']; // Purple, Blue, Pink for query nature
 
   const getStatusColor = (status: string) => {
     if (status === 'completed') return 'text-green-600 bg-green-100';
@@ -252,7 +254,7 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
         {/* Engagement Level Distribution */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-gray-800 mb-4">Engagement Level Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
                 data={engagementData}
@@ -260,12 +262,12 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
               >
                 {engagementData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={ENGAGEMENT_COLORS[index % ENGAGEMENT_COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -276,7 +278,7 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
         {/* Query Nature Distribution */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-gray-800 mb-4">Query Nature Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
                 data={queryDistributionData}
@@ -284,12 +286,12 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
               >
                 {queryDistributionData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={QUERY_NATURE_COLORS[index % QUERY_NATURE_COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />

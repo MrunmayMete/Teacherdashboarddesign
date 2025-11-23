@@ -1,4 +1,4 @@
-import { MessageSquare, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, X, ChevronDown, ChevronUp, Send } from 'lucide-react';
 import { useState } from 'react';
 
 interface StudentQuestionsPanelProps {
@@ -112,6 +112,8 @@ const queriesData: { [key: string]: QueryData } = {
 export function StudentQuestionsPanel({ filters }: StudentQuestionsPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState('');
 
   const getRecentQueries = (): string[] => {
     // Priority: Topic > Subject > Default
@@ -129,6 +131,15 @@ export function StudentQuestionsPanel({ filters }: StudentQuestionsPanelProps) {
   };
 
   const recentQueries = getRecentQueries();
+
+  const handleSendReply = () => {
+    if (replyText.trim()) {
+      // Here you would send the reply to the backend
+      console.log('Reply sent:', replyText);
+      setReplyText('');
+      setSelectedQuestionIndex(null);
+    }
+  };
 
   return (
     <>
@@ -186,7 +197,8 @@ export function StudentQuestionsPanel({ filters }: StudentQuestionsPanelProps) {
                 {recentQueries.map((query, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all"
+                    className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-green-300 transition-all cursor-pointer"
+                    onClick={() => setSelectedQuestionIndex(selectedQuestionIndex === index ? null : index)}
                   >
                     <div className="flex items-start gap-3">
                       <div className="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -201,6 +213,29 @@ export function StudentQuestionsPanel({ filters }: StudentQuestionsPanelProps) {
                            index === 3 ? '2 hours ago' : 
                            '3 hours ago'}
                         </div>
+                        
+                        {/* Reply Section */}
+                        {selectedQuestionIndex === index && (
+                          <div className="mt-3 pt-3 border-t border-gray-300" onClick={(e) => e.stopPropagation()}>
+                            <div className="text-sm text-gray-600 mb-2">Reply to student:</div>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSendReply()}
+                                placeholder="Type your answer..."
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                              />
+                              <button
+                                onClick={handleSendReply}
+                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                              >
+                                <Send className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

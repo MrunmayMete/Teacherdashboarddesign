@@ -281,6 +281,35 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
         <ClassInsights filters={filters} />
       </div>
 
+      {/* Student-Specific Tile Inferences - Moved above Engagement Scatter Plot */}
+      {tileInferences.show && (
+        <div className="mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
+          <div className="flex items-start gap-3 mb-4">
+            <Brain className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-indigo-900 mb-2">{tileInferences.title}</h3>
+              <p className="text-indigo-700 mb-4">
+                AI-powered analysis based on Notes, Content Scanning, and Query patterns from the dashboard tiles above
+              </p>
+              
+              <div className="space-y-4">
+                {tileInferences.insights.map((insight, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl flex-shrink-0">{insight.icon}</span>
+                      <p 
+                        className="text-gray-800 flex-1" 
+                        dangerouslySetInnerHTML={{ __html: insight.text }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Engagement Scatter Plot */}
       <div className="mb-8">
         <EngagementScatterPlot filters={filters} setFilters={setFilters} />
@@ -401,35 +430,6 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
           </div>
         </div>
       </div>
-
-      {/* Student-Specific Tile Inferences */}
-      {tileInferences.show && (
-        <div className="mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
-          <div className="flex items-start gap-3 mb-4">
-            <Brain className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
-            <div className="flex-1">
-              <h3 className="text-indigo-900 mb-2">{tileInferences.title}</h3>
-              <p className="text-indigo-700 mb-4">
-                AI-powered analysis based on Notes, Content Scanning, and Query patterns from the dashboard tiles above
-              </p>
-              
-              <div className="space-y-4">
-                {tileInferences.insights.map((insight, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm">
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">{insight.icon}</span>
-                      <p 
-                        className="text-gray-800 flex-1" 
-                        dangerouslySetInnerHTML={{ __html: insight.text }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

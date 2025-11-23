@@ -1,4 +1,4 @@
-import { ChevronDown, X, Check } from 'lucide-react';
+import { ChevronDown, X, Check, Search, LogOut } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface FilterBarProps {
@@ -8,20 +8,30 @@ interface FilterBarProps {
     students: string[];
     topic: string | null;
     engagementLevel: 'low' | 'medium' | 'high' | null;
+    learningMode: 'All' | 'Classroom' | 'Self-Learning';
   };
   setFilters: (filters: any) => void;
   currentPage: 'dashboard' | 'queries' | 'performance' | 'content' | 'notes';
   setCurrentPage: (page: 'dashboard' | 'queries' | 'performance' | 'content' | 'notes') => void;
+  onLogout?: () => void;
 }
 
 const classes = ['All Classes', 'Grade 6A', 'Grade 6B', 'Grade 7A', 'Grade 7B', 'Grade 8A', 'Grade 8B'];
 const subjects = ['All Subjects', 'Biology', 'Molecular Biology', 'Anatomy & Physiology', 'Botany', 'Zoology', 'Microbiology', 'Ecology'];
 const topics = ['All Topics', 'Cell Biology', 'Genetics', 'Evolution', 'Photosynthesis', 'Respiration', 'DNA Structure', 'Protein Synthesis', 'Mitosis', 'Meiosis', 'Ecosystems', 'Food Chains', 'Homeostasis'];
 const students = ['Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 'Ava Wilson', 'Ethan Martinez', 'Sophia Anderson', 'Mason Taylor'];
+const learningModes = ['All', 'Classroom', 'Self-Learning'];
 
-export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: FilterBarProps) {
+export function FilterBar({ filters, setFilters, currentPage, setCurrentPage, onLogout }: FilterBarProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [searchQueries, setSearchQueries] = useState<{ [key: string]: string }>({
+    class: '',
+    subject: '',
+    topic: '',
+    learningMode: '',
+    students: ''
+  });
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -75,33 +85,69 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
     setFilters({ ...filters, topic: null });
   };
 
-  const Dropdown = ({ label, options, value, filterType }: { label: string; options: string[]; value: string; filterType: string }) => (
-    <div className="relative">
-      <button
-        onClick={() => setOpenDropdown(openDropdown === filterType ? null : filterType)}
-        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-      >
-        <span className="text-gray-600">{label}:</span>
-        <span>{value}</span>
-        <ChevronDown className="w-4 h-4 text-gray-400" />
-      </button>
-      {openDropdown === filterType && (
-        <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000]">
-          {options.map((option) => (
-            <button
-              key={option}
-              onClick={() => handleFilterChange(filterType, option)}
-              className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                value === option ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  const Dropdown = ({ label, options, value, filterType }: { label: string; options: string[]; value: string; filterType: string }) => {
+    const filteredOptions = options.filter(option => 
+      option.toLowerCase().includes(searchQueries[filterType].toLowerCase())
+    );
+
+    return (
+      <div className="relative">
+        <button
+          onClick={() => {
+            setOpenDropdown(openDropdown === filterType ? null : filterType);
+            if (openDropdown !== filterType) {
+              setSearchQueries({ ...searchQueries, [filterType]: '' });
+            }
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <span className="text-gray-600">{label}:</span>
+          <span>{value}</span>
+          <ChevronDown className="w-4 h-4 text-gray-400" />
+        </button>
+        {openDropdown === filterType && (
+          <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000]">
+            {/* Search Bar */}
+            <div className="sticky top-0 bg-white p-2 border-b border-gray-200">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchQueries[filterType]}
+                  onChange={(e) => setSearchQueries({ ...searchQueries, [filterType]: e.target.value })}
+                  placeholder="Search..."
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+            
+            {/* Options List with scrollbar - max 5 items visible */}
+            <div className="max-h-[200px] overflow-y-auto">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      handleFilterChange(filterType, option);
+                      setSearchQueries({ ...searchQueries, [filterType]: '' });
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
+                      value === option ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-gray-500 text-sm">No results found</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const MultiSelectDropdown = () => {
     const displayText = filters.students.length === 0 
@@ -110,10 +156,19 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
       ? filters.students[0] 
       : `${filters.students.length} Students`;
 
+    const filteredStudents = students.filter(student => 
+      student.toLowerCase().includes(searchQueries.students.toLowerCase())
+    );
+
     return (
       <div className="relative">
         <button
-          onClick={() => setOpenDropdown(openDropdown === 'students' ? null : 'students')}
+          onClick={() => {
+            setOpenDropdown(openDropdown === 'students' ? null : 'students');
+            if (openDropdown !== 'students') {
+              setSearchQueries({ ...searchQueries, students: '' });
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <span className="text-gray-600">Students:</span>
@@ -121,11 +176,26 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
           <ChevronDown className="w-4 h-4 text-gray-400" />
         </button>
         {openDropdown === 'students' && (
-          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000] max-h-96 overflow-y-auto">
+          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000]">
+            {/* Search Bar */}
+            <div className="sticky top-0 bg-white p-2 border-b border-gray-200 z-20">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchQueries.students}
+                  onChange={(e) => setSearchQueries({ ...searchQueries, students: e.target.value })}
+                  placeholder="Search students..."
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+
             {/* Select All Option */}
             <button
               onClick={handleSelectAllStudents}
-              className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-200 text-gray-700 sticky top-0 bg-white z-10"
+              className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-200 text-gray-700 sticky top-[60px] bg-white z-10"
             >
               <div className="flex items-center gap-2">
                 <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
@@ -143,32 +213,38 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
               </div>
             </button>
             
-            {/* Individual Students */}
-            {students.map((student) => {
-              const isSelected = filters.students.includes(student);
-              return (
-                <button
-                  key={student}
-                  onClick={() => handleStudentToggle(student)}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-                      isSelected
-                        ? 'bg-blue-600 border-blue-600'
-                        : 'border-gray-300'
-                    }`}>
-                      {isSelected && (
-                        <Check className="w-3 h-3 text-white" />
-                      )}
-                    </div>
-                    <span className={isSelected ? 'text-blue-600' : 'text-gray-700'}>
-                      {student}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+            {/* Individual Students with scrollbar - max 5 items visible */}
+            <div className="max-h-[200px] overflow-y-auto">
+              {filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => {
+                  const isSelected = filters.students.includes(student);
+                  return (
+                    <button
+                      key={student}
+                      onClick={() => handleStudentToggle(student)}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
+                          isSelected
+                            ? 'bg-blue-600 border-blue-600'
+                            : 'border-gray-300'
+                        }`}>
+                          {isSelected && (
+                            <Check className="w-3 h-3 text-white" />
+                          )}
+                        </div>
+                        <span className={isSelected ? 'text-blue-600' : 'text-gray-700'}>
+                          {student}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="px-4 py-2 text-gray-500 text-sm">No students found</div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -177,27 +253,42 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
 
   return (
     <div ref={dropdownRef} className="bg-white border-b border-gray-200 px-8 py-4 fixed top-0 left-0 right-0 z-[9999]">
-      <div className="flex items-center gap-4 flex-wrap">
-        <Dropdown label="Class" options={classes} value={filters.class} filterType="class" />
-        <Dropdown label="Subject" options={subjects} value={filters.subject} filterType="subject" />
-        <Dropdown label="Topic" options={topics} value={filters.topic || 'All Topics'} filterType="topic" />
-        <MultiSelectDropdown />
+      <div className="flex items-center justify-between gap-4">
+        {/* Left side - Filters */}
+        <div className="flex items-center gap-4 flex-wrap flex-1">
+          <Dropdown label="Class" options={classes} value={filters.class} filterType="class" />
+          <Dropdown label="Subject" options={subjects} value={filters.subject} filterType="subject" />
+          <Dropdown label="Topic" options={topics} value={filters.topic || 'All Topics'} filterType="topic" />
+          <Dropdown label="Mode" options={learningModes} value={filters.learningMode} filterType="learningMode" />
+          <MultiSelectDropdown />
+          
+          {/* Display selected students as chips */}
+          {filters.students.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {filters.students.map((student) => (
+                <div key={student} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <span>{student}</span>
+                  <button
+                    onClick={() => removeStudent(student)}
+                    className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         
-        {/* Display selected students as chips */}
-        {filters.students.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {filters.students.map((student) => (
-              <div key={student} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                <span>{student}</span>
-                <button
-                  onClick={() => removeStudent(student)}
-                  className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
+        {/* Right side - Logout Button */}
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white border border-red-500 rounded-lg hover:bg-red-600 transition-colors flex-shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </button>
         )}
       </div>
     </div>
