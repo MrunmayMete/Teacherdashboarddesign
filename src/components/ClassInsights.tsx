@@ -252,44 +252,69 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
       {/* Learning Behavior Inference - Outside tabs, on top */}
       <div className="p-6 border border-gray-200 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50">
         <div className="flex items-start gap-3">
-          <Brain className="w-6 h-6 text-purple-600 mt-0.5 flex-shrink-0" />
+          <Brain className="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="text-purple-900 mb-3 flex items-center gap-2">
-              <span>Academic & Learning State Analysis</span>
-              <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">AI-Generated</span>
-            </h4>
-            <div className="space-y-3">
+            {/* Main Title */}
+            <div className="mb-4">
+              <h2 className="text-purple-900 mb-1">
+                Academic & Learning State Analysis
+              </h2>
+              <p className="text-sm text-purple-700">
+                AI-powered insights based on current filter selections
+              </p>
+            </div>
+            
+            {/* Insights Section */}
+            <div className="space-y-4">
               {academicInsights.map((insight, idx) => (
                 <div 
                   key={idx} 
-                  className={`p-3 rounded-lg ${
+                  className={`p-4 rounded-lg ${
                     insight.type === 'academic-state' ? 'bg-blue-100 border border-blue-200' :
                     insight.type === 'focus-area' ? 'bg-orange-100 border border-orange-200' :
                     'bg-green-100 border border-green-200'
                   }`}
                 >
-                  <div className="flex items-start gap-2">
-                    <div className={`mt-0.5 ${
+                  <div className="flex items-start gap-3">
+                    <div className={`text-xl mt-0.5 flex-shrink-0 ${
                       insight.type === 'academic-state' ? 'text-blue-600' :
                       insight.type === 'focus-area' ? 'text-orange-600' :
                       'text-green-600'
                     }`}>
                       {insight.type === 'academic-state' ? '📊' : insight.type === 'focus-area' ? '🎯' : '💡'}
                     </div>
-                    <p className={`text-sm ${
-                      insight.type === 'academic-state' ? 'text-blue-900' :
-                      insight.type === 'focus-area' ? 'text-orange-900' :
-                      'text-green-900'
-                    }`}>
-                      {insight.text}
-                    </p>
+                    <div className="flex-1">
+                      {/* Insight Type Label */}
+                      <h3 className={`mb-2 uppercase tracking-wide ${
+                        insight.type === 'academic-state' ? 'text-blue-700' :
+                        insight.type === 'focus-area' ? 'text-orange-700' :
+                        'text-green-700'
+                      }`}>
+                        {insight.type === 'academic-state' ? 'Current State' :
+                         insight.type === 'focus-area' ? 'Action Required' :
+                         'Recommendation'}
+                      </h3>
+                      {/* Insight Text */}
+                      <p className={`leading-relaxed ${
+                        insight.type === 'academic-state' ? 'text-blue-900' :
+                        insight.type === 'focus-area' ? 'text-orange-900' :
+                        'text-green-900'
+                      }`}>
+                        {insight.text}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 pt-3 border-t border-purple-200">
-              <p className="text-xs text-purple-700 italic">
-                💡 Tip: Adjust filters above (Subject, Topic, Students, Engagement Level) to get targeted insights for specific groups or individuals.
+            
+            {/* Help Text Footer */}
+            <div className="mt-5 pt-4 border-t border-purple-200">
+              <h4 className="text-purple-800 mb-2">
+                How to Use This Analysis
+              </h4>
+              <p className="text-sm text-purple-700 leading-relaxed">
+                💡 Adjust filters above (Class, Subject, Topic, Students, Learning Mode) to get targeted insights for specific groups or individuals. The analysis updates dynamically based on your selections.
               </p>
             </div>
           </div>
@@ -309,7 +334,7 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
                   : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
               }`}
             >
-              Individual Student Behavior
+              <h3>Individual Student Behavior</h3>
             </button>
             <button
               onClick={() => setActiveTab('engagement')}
@@ -319,7 +344,7 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
                   : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
               }`}
             >
-              Student Engagement by Topic
+              <h3>Student Engagement by Topic</h3>
             </button>
           </div>
         </div>
