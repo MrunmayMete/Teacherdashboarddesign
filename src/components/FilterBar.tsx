@@ -17,7 +17,7 @@ interface FilterBarProps {
 }
 
 const classes = ['All Classes', 'Grade 6A', 'Grade 6B', 'Grade 7A', 'Grade 7B', 'Grade 8A', 'Grade 8B'];
-const subjects = ['All Subjects', 'Biology', 'Molecular Biology', 'Anatomy & Physiology', 'Botany', 'Zoology', 'Microbiology', 'Ecology'];
+const subjects = ['Biology'];
 const topics = ['All Topics', 'Cell Biology', 'Genetics', 'Evolution', 'Photosynthesis', 'Respiration', 'DNA Structure', 'Protein Synthesis', 'Mitosis', 'Meiosis', 'Ecosystems', 'Food Chains', 'Homeostasis'];
 const students = ['Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 'Ava Wilson', 'Ethan Martinez', 'Sophia Anderson', 'Mason Taylor'];
 const learningModes = ['All', 'Classroom', 'Self-Learning'];

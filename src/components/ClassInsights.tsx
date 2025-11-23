@@ -212,24 +212,6 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
       });
     }
 
-    // Subject-based recommendations
-    if (filters.subject !== 'All Subjects') {
-      const topicMap: { [key: string]: string[] } = {
-        'Biology': ['Cell Biology', 'Genetics', 'Evolution'],
-        'Molecular Biology': ['DNA Structure', 'Protein Synthesis'],
-        'Anatomy & Physiology': ['Homeostasis'],
-        'Ecology': ['Ecosystems', 'Food Chains']
-      };
-      
-      const suggestedTopics = topicMap[filters.subject] || [];
-      if (suggestedTopics.length > 0 && strugglingStudents > 0) {
-        insights.push({
-          type: 'recommendation',
-          text: `${filters.subject} RECOMMENDATION: Based on struggle patterns, prioritize ${suggestedTopics.slice(0, 2).join(' and ')} with struggling students. Use differentiated instruction - visual learners need diagrams, kinesthetic learners need lab activities.`
-        });
-      }
-    }
-
     // Engagement level filter insights
     if (filters.engagementLevel) {
       const levelText = filters.engagementLevel === 'low' ? 'LOW engagement students need motivation, 1-on-1 check-ins, and alternative teaching methods' :

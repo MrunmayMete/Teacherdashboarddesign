@@ -175,29 +175,10 @@ const activitiesData: { [key: string]: any[] } = {
 };
 
 export function DashboardContent({ filters, setFilters }: DashboardContentProps) {
-  const getRecentActivities = () => {
-    // Priority: Student > Subject > Class > Default
-    if (filters.students.length > 0 && activitiesData[filters.students[0]]) {
-      let activities = activitiesData[filters.students[0]];
-      // Further filter by subject if selected
-      if (filters.subject !== 'All Subjects') {
-        activities = activities.filter(a => a.subject === filters.subject);
-      }
-      return activities.length > 0 ? activities : activitiesData['default'];
-    }
-    
-    if (filters.subject !== 'All Subjects' && activitiesData[filters.subject]) {
-      let activities = activitiesData[filters.subject];
-      // Further filter by class if selected
-      if (filters.class !== 'All Classes') {
-        // For subject filter, we already have the right activities
-        return activities;
-      }
-      return activities;
-    }
-    
-    if (filters.class !== 'All Classes' && activitiesData[filters.class]) {
-      return activitiesData[filters.class];
+  const getSelectedActivities = () => {
+    // If specific students are selected, use their data
+    if (filters.students.length === 1 && activitiesData[filters.students[0]]) {
+      return activitiesData[filters.students[0]];
     }
     
     return activitiesData['default'];
@@ -271,7 +252,7 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
     return { show: false, insights: [] };
   };
 
-  const recentActivities = getRecentActivities();
+  const selectedActivities = getSelectedActivities();
   const tileInferences = generateTileInferences();
 
   return (

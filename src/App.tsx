@@ -15,7 +15,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [filters, setFilters] = useState({
     class: 'All Classes',
-    subject: 'All Subjects',
+    subject: 'Biology',
     students: [] as string[],
     topic: null as string | null,
     engagementLevel: null as 'low' | 'medium' | 'high' | null,
@@ -32,7 +32,7 @@ export default function App() {
     // Reset filters and page on logout
     setFilters({
       class: 'All Classes',
-      subject: 'All Subjects',
+      subject: 'Biology',
       students: [],
       topic: null,
       engagementLevel: null,

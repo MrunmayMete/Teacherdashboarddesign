@@ -38,7 +38,7 @@ export function ChatBot({ filters }: ChatBotProps) {
       // Welcome message when first opened
       const welcomeMessage: Message = {
         id: Date.now().toString(),
-        text: `Hello! I'm your AI teaching assistant. I can provide insights about your classroom data. Currently viewing: ${filters.class}, ${filters.subject}, ${filters.students.join(', ')}. How can I help you today?`,
+        text: `Hello! I'm your AI teaching assistant. I can provide insights about your classroom data. Currently viewing: ${filters.students.length > 0 ? filters.students.join(', ') : 'All Students'}${filters.topic ? ', Topic: ' + filters.topic : ''}. How can I help you today?`,
         sender: 'bot',
         timestamp: new Date()
       };
@@ -50,23 +50,18 @@ export function ChatBot({ filters }: ChatBotProps) {
     const lowerMessage = userMessage.toLowerCase();
 
     // Context-aware responses based on filters
-    const filterContext = `Based on your current selection (${filters.class}, ${filters.subject}, ${filters.students.join(', ')}${filters.topic ? ', Topic: ' + filters.topic : ''})`;
+    const filterContext = `Based on your current selection (${filters.students.join(', ')}${filters.topic ? ', Topic: ' + filters.topic : ''})`;
 
     // Performance-related queries
     if (lowerMessage.includes('performance') || lowerMessage.includes('how are') || lowerMessage.includes('doing')) {
       if (filters.students.length === 1) {
-        return `${filterContext}, ${filters.students[0]} is showing strong performance with an average score of 87%. They excel particularly in recent assignments with a 5% improvement over the last two weeks. Their engagement in ${filters.subject !== 'All Subjects' ? filters.subject : 'current subjects'} is at 85%.`;
-      } else if (filters.class !== 'All Classes') {
-        return `${filterContext}, the class is performing well with an average of 85%. The performance trend shows consistent improvement with a 5% increase over the past month. Attendance is strong at 93%, and topic engagement is healthy across all subjects.`;
+        return `${filterContext}, ${filters.students[0]} is showing strong performance with an average score of 87%. They excel particularly in recent assignments with a 5% improvement over the last two weeks. Their engagement in ${filters.topic ? filters.topic : 'current topics'} is at 85%.`;
       }
       return `Overall performance across all classes is at 85% with an upward trend. Weekly attendance averages 93%, and student engagement has increased by 5% this month.`;
     }
 
     // Attendance queries
     if (lowerMessage.includes('attendance') || lowerMessage.includes('absent') || lowerMessage.includes('present')) {
-      if (filters.class !== 'All Classes') {
-        return `${filterContext}, attendance is excellent with 93% average this week. Monday had 28/30 students present, with perfect attendance on Friday. Only 2-4 absences throughout the week, which is below the school average.`;
-      }
       return `Attendance across all classes averages 93% this week. The trend shows Friday has the best attendance (100%), while Thursday typically sees more absences (4 students). Consider scheduling important lessons early in the week.`;
     }
 
@@ -74,9 +69,6 @@ export function ChatBot({ filters }: ChatBotProps) {
     if (lowerMessage.includes('engagement') || lowerMessage.includes('topic') || lowerMessage.includes('interest')) {
       if (filters.topic) {
         return `${filterContext}, the engagement for ${filters.topic} shows ${filters.topic === 'Statistics' ? '91%' : filters.topic === 'Algebra' ? '85%' : '75%'} participation. Students are actively engaging with the material. Consider incorporating more interactive activities to maintain this momentum.`;
-      }
-      if (filters.subject !== 'All Subjects') {
-        return `${filterContext}, engagement in ${filters.subject} topics is strong. Statistics shows the highest engagement at 91%, while Fractions needs attention at 68%. Consider incorporating more interactive activities for lower-engagement topics.`;
       }
       return `Topic engagement varies by subject. Science's Photosynthesis topic leads at 88%, while some math topics like Fractions are at 68%. Interactive and visual learning methods tend to show 15-20% higher engagement rates.`;
     }
@@ -87,12 +79,6 @@ export function ChatBot({ filters }: ChatBotProps) {
       if (filters.topic) {
         suggestions.push(`For ${filters.topic}, review the student queries to identify common confusion points.`);
         suggestions.push(`Consider creating supplementary materials specifically for ${filters.topic}.`);
-      }
-      if (filters.subject !== 'All Subjects') {
-        suggestions.push(`For ${filters.subject}, consider adding more hands-on activities for topics with <75% engagement.`);
-      }
-      if (filters.class !== 'All Classes') {
-        suggestions.push(`In ${filters.class}, implement peer tutoring for students scoring below 80%.`);
       }
       suggestions.push('Schedule review sessions on Thursdays when attendance dips.');
       suggestions.push('Use the high-performing topics as models for teaching lower-engagement subjects.');
