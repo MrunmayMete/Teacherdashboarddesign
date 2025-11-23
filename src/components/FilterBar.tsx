@@ -1,6 +1,5 @@
-import { ChevronDown, X, Check, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { ChevronDown, X, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { TeacherCalendar } from './TeacherCalendar';
 
 interface FilterBarProps {
   filters: {
@@ -22,17 +21,7 @@ const students = ['Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 'A
 
 export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: FilterBarProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -44,14 +33,6 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  };
 
   const handleFilterChange = (filterType: string, value: string) => {
     if (filterType === 'topic') {
@@ -105,7 +86,7 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
         <ChevronDown className="w-4 h-4 text-gray-400" />
       </button>
       {openDropdown === filterType && (
-        <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[110] max-h-64 overflow-y-auto">
+        <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000]">
           {options.map((option) => (
             <button
               key={option}
@@ -140,11 +121,11 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
           <ChevronDown className="w-4 h-4 text-gray-400" />
         </button>
         {openDropdown === 'students' && (
-          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[110] max-h-80 overflow-y-auto">
+          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[10000] max-h-96 overflow-y-auto">
             {/* Select All Option */}
             <button
               onClick={handleSelectAllStudents}
-              className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-200 text-gray-700"
+              className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors border-b border-gray-200 text-gray-700 sticky top-0 bg-white z-10"
             >
               <div className="flex items-center gap-2">
                 <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
@@ -195,7 +176,7 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
   };
 
   return (
-    <div ref={dropdownRef} className="bg-white border-b border-gray-200 px-8 py-2 fixed top-0 left-0 right-0 z-[100] overflow-x-hidden">
+    <div ref={dropdownRef} className="bg-white border-b border-gray-200 px-8 py-4 fixed top-0 left-0 right-0 z-[9999]">
       <div className="flex items-center gap-4 flex-wrap">
         <Dropdown label="Class" options={classes} value={filters.class} filterType="class" />
         <Dropdown label="Subject" options={subjects} value={filters.subject} filterType="subject" />
@@ -218,42 +199,6 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
             ))}
           </div>
         )}
-        
-        {/* Time and Date beside filters */}
-        <div className="ml-auto flex items-center gap-3 relative">
-          <button
-            onClick={() => setShowCalendar(!showCalendar)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <CalendarIcon className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600">{formatDate(currentTime)}</span>
-          </button>
-          <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg">
-            <Clock className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-600">{formatTime(currentTime)}</span>
-          </div>
-          
-          {/* Calendar Dropdown */}
-          {showCalendar && (
-            <>
-              <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-2xl z-50 w-[95vw] max-w-6xl max-h-[80vh] overflow-y-auto">
-                <div className="flex justify-end p-2 border-b border-gray-200">
-                  <button
-                    onClick={() => setShowCalendar(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <X className="w-5 h-5 text-gray-600" />
-                  </button>
-                </div>
-                <TeacherCalendar />
-              </div>
-              <div 
-                className="fixed inset-0 bg-black bg-opacity-20 z-40"
-                onClick={() => setShowCalendar(false)}
-              />
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

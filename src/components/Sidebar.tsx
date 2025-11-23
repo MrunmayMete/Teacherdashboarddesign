@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, MessageSquare, TrendingUp, Scan, FileText } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, TrendingUp, BookOpen, FileText } from 'lucide-react';
 
 interface SidebarProps {
   filters: {
@@ -15,7 +15,7 @@ interface SidebarProps {
 
 export function Sidebar({ filters, setFilters, currentPage, setCurrentPage }: SidebarProps) {
   return (
-    <div className="w-56 bg-white border-r border-gray-200 h-[calc(100vh-80px)] p-6 fixed top-[80px] left-0 overflow-y-auto">
+    <div className="w-56 bg-white border-r border-gray-200 h-[calc(100vh-72px)] p-6 fixed top-[72px] left-0 overflow-y-auto">
       {/* Navigation Links */}
       <div>
         <h3 className="text-gray-800 mb-4">Navigation</h3>
@@ -61,7 +61,7 @@ export function Sidebar({ filters, setFilters, currentPage, setCurrentPage }: Si
             }`}
             onClick={() => setCurrentPage('content')}
           >
-            <Scan className="w-5 h-5" />
+            <BookOpen className="w-5 h-5" />
             <span>Content Scanned</span>
           </button>
           <button

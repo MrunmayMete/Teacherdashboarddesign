@@ -282,44 +282,46 @@ export function QuerySignature({ filters }: QuerySignatureProps) {
           </p>
         </div>
 
-        {/* Difficulty Distribution - Interactive Pie Chart */}
-        <div>
-          <h4 className="text-gray-700 mb-3">Query Difficulty Distribution</h4>
+        {/* Query Difficulty Distribution */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <h4 className="text-gray-800 mb-4">Query Difficulty Distribution</h4>
           <div className="flex items-center justify-center h-[300px]">
-            <ResponsiveContainer width="60%" height="100%">
-              <PieChart>
-                <Pie
-                  data={difficultyData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={5}
-                  dataKey="value"
-                  onClick={(entry) => {
-                    const difficultyMap: { [key: string]: 'basic' | 'intermediate' | 'advanced' } = {
-                      'Basic': 'basic',
-                      'Intermediate': 'intermediate',
-                      'Advanced': 'advanced'
-                    };
-                    const difficulty = difficultyMap[entry.name];
-                    setSelectedDifficulty(selectedDifficulty === difficulty ? 'all' : difficulty);
-                  }}
-                  cursor="pointer"
-                >
-                  {difficultyData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color}
-                      opacity={selectedDifficulty === 'all' || selectedDifficulty === entry.name.toLowerCase() ? 1 : 0.3}
-                      stroke={selectedDifficulty === entry.name.toLowerCase() ? '#1f2937' : 'none'}
-                      strokeWidth={selectedDifficulty === entry.name.toLowerCase() ? 3 : 0}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="w-[60%] h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={difficultyData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    onClick={(entry) => {
+                      const difficultyMap: { [key: string]: 'basic' | 'intermediate' | 'advanced' } = {
+                        'Basic': 'basic',
+                        'Intermediate': 'intermediate',
+                        'Advanced': 'advanced'
+                      };
+                      const difficulty = difficultyMap[entry.name];
+                      setSelectedDifficulty(selectedDifficulty === difficulty ? 'all' : difficulty);
+                    }}
+                    cursor="pointer"
+                  >
+                    {difficultyData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.color}
+                        opacity={selectedDifficulty === 'all' || selectedDifficulty === entry.name.toLowerCase() ? 1 : 0.3}
+                        stroke={selectedDifficulty === entry.name.toLowerCase() ? '#1f2937' : 'none'}
+                        strokeWidth={selectedDifficulty === entry.name.toLowerCase() ? 3 : 0}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             <div className="ml-4 space-y-2">
               {difficultyData.map((item) => {
                 const isSelected = selectedDifficulty === item.name.toLowerCase();

@@ -21,7 +21,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'queries' | 'performance' | 'content' | 'notes'>('dashboard');
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-[80px] overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 pt-[72px] overflow-x-hidden">
       {/* Filter Bar */}
       <FilterBar filters={filters} setFilters={setFilters} currentPage={currentPage} setCurrentPage={setCurrentPage} />
 
