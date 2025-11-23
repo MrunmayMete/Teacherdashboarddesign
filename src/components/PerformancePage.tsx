@@ -9,6 +9,7 @@ interface PerformancePageProps {
     subject: string;
     students: string[];
     topic: string | null;
+    engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
 }
 

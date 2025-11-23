@@ -7,7 +7,9 @@ interface EngagementScatterPlotProps {
     subject: string;
     students: string[];
     topic: string | null;
+    engagementLevel: 'low' | 'medium' | 'high' | null;
   };
+  setFilters?: (filters: any) => void;
 }
 
 interface StudentEngagementData {
@@ -55,7 +57,7 @@ const generateEngagementData = (studentNames: string[]): StudentEngagementData[]
   return data;
 };
 
-export function EngagementScatterPlot({ filters }: EngagementScatterPlotProps) {
+export function EngagementScatterPlot({ filters, setFilters }: EngagementScatterPlotProps) {
   // Filter students based on dashboard filters
   const selectedStudents = filters.students.length > 0 
     ? filters.students 
@@ -202,20 +204,80 @@ export function EngagementScatterPlot({ filters }: EngagementScatterPlotProps) {
     <div className="bg-white p-6 rounded-lg border border-gray-200">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Users className="w-5 h-5 text-blue-600" />
-          <h3 className="text-gray-800">Student Engagement by Topic</h3>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <Users className="w-5 h-5 text-blue-600" />
+            <h3 className="text-gray-800">Student Engagement by Topic</h3>
+          </div>
+          
+          {/* Engagement Level Filter Buttons */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 mr-2">Filter by Level:</span>
+            <button
+              onClick={() => setFilters && setFilters({ ...filters, engagementLevel: filters.engagementLevel === 'low' ? null : 'low' })}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filters.engagementLevel === 'low'
+                  ? 'bg-yellow-500 text-white shadow-md scale-105'
+                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100'
+              }`}
+            >
+              Low {'(<50%)'}
+            </button>
+            <button
+              onClick={() => setFilters && setFilters({ ...filters, engagementLevel: filters.engagementLevel === 'medium' ? null : 'medium' })}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filters.engagementLevel === 'medium'
+                  ? 'bg-lime-500 text-white shadow-md scale-105'
+                  : 'bg-lime-50 text-lime-700 border border-lime-200 hover:bg-lime-100'
+              }`}
+            >
+              Medium (50-70%)
+            </button>
+            <button
+              onClick={() => setFilters && setFilters({ ...filters, engagementLevel: filters.engagementLevel === 'high' ? null : 'high' })}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filters.engagementLevel === 'high'
+                  ? 'bg-green-600 text-white shadow-md scale-105'
+                  : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'
+              }`}
+            >
+              High (70%+)
+            </button>
+            
+            <div className="w-px h-8 bg-gray-300 mx-2" />
+            
+            <button
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-2"
+            >
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              Currently Active Students
+            </button>
+            
+            {filters.engagementLevel && (
+              <button
+                onClick={() => setFilters && setFilters({ ...filters, engagementLevel: null })}
+                className="px-3 py-2 rounded-lg text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
         <p className="text-gray-500 text-sm">
           Each dot represents a student's engagement level for a specific topic
+          {filters.engagementLevel && (
+            <span className="ml-2 text-blue-600 font-medium">
+              • Currently filtering: {filters.engagementLevel.charAt(0).toUpperCase() + filters.engagementLevel.slice(1)} engagement
+            </span>
+          )}
         </p>
       </div>
 
       {/* Stats Summary */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="p-3 bg-gray-50 rounded-lg">
-          <div className="text-gray-600 text-sm mb-1">Data Points</div>
-          <div className="text-gray-900 text-lg">{filteredData.length}</div>
+          <div className="text-gray-600 text-sm mb-1">Students</div>
+          <div className="text-gray-900 text-lg">{selectedStudents.length}</div>
         </div>
         <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
           <div className="text-gray-600 text-sm mb-1">Low {'(<50%)'}</div>

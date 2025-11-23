@@ -8,6 +8,7 @@ interface FilterBarProps {
     subject: string;
     students: string[];
     topic: string | null;
+    engagementLevel: 'low' | 'medium' | 'high' | null;
   };
   setFilters: (filters: any) => void;
   currentPage: 'dashboard' | 'queries' | 'performance' | 'content' | 'notes';
@@ -104,7 +105,7 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
         <ChevronDown className="w-4 h-4 text-gray-400" />
       </button>
       {openDropdown === filterType && (
-        <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[110] max-h-64 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option}
@@ -139,7 +140,7 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
           <ChevronDown className="w-4 h-4 text-gray-400" />
         </button>
         {openDropdown === 'students' && (
-          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[110] max-h-80 overflow-y-auto">
             {/* Select All Option */}
             <button
               onClick={handleSelectAllStudents}
@@ -194,7 +195,7 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage }: 
   };
 
   return (
-    <div ref={dropdownRef} className="bg-white border-b border-gray-200 px-8 py-4 fixed top-0 left-0 right-0 z-40 overflow-x-hidden">
+    <div ref={dropdownRef} className="bg-white border-b border-gray-200 px-8 py-2 fixed top-0 left-0 right-0 z-[100] overflow-x-hidden">
       <div className="flex items-center gap-4 flex-wrap">
         <Dropdown label="Class" options={classes} value={filters.class} filterType="class" />
         <Dropdown label="Subject" options={subjects} value={filters.subject} filterType="subject" />

@@ -6,6 +6,7 @@ interface ClassInsightsProps {
     subject: string;
     students: string[];
     topic: string | null;
+    engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
 }
 
@@ -103,11 +104,143 @@ export function ClassInsights({ filters }: ClassInsightsProps) {
 
   const filteredActivities = getFilteredActivities();
 
-  // Calculate insights
   const totalDoubts = filteredActivities.reduce((sum, s) => sum + s.doubtsAsked, 0);
   const totalVideos = filteredActivities.reduce((sum, s) => sum + s.videosWatched, 0);
   const strugglingStudents = filteredActivities.filter(s => s.status === 'struggling').length;
   const improvingStudents = filteredActivities.filter(s => s.status === 'improving').length;
+  const confidentStudents = filteredActivities.filter(s => s.status === 'confident').length;
+
+  // Generate comprehensive academic insights based on filters
+  const generateAcademicInsights = () => {
+    const insights = [];
+    const isIndividual = filters.students.length === 1;
+    const isGroup = filters.students.length > 1 && filters.students.length < studentActivitiesData.length;
+    const isWholeClass = filters.students.length === 0 || filters.students.length === studentActivitiesData.length;
+    
+    // Academic State Analysis
+    if (isIndividual) {
+      const student = filteredActivities[0];
+      const doubtLevel = student.doubtsAsked > 10 ? 'very high' : student.doubtsAsked > 6 ? 'high' : student.doubtsAsked > 3 ? 'moderate' : 'low';
+      const engagementLevel = student.videosWatched > 12 ? 'high' : student.videosWatched > 8 ? 'good' : 'needs improvement';
+      
+      insights.push({
+        type: 'academic-state',
+        text: `${student.name} shows ${doubtLevel} questioning behavior (${student.doubtsAsked} doubts) with ${engagementLevel} self-learning engagement (${student.videosWatched} videos watched). Current status: ${student.status.toUpperCase()}.`
+      });
+
+      if (student.strugglingWith.length > 0) {
+        insights.push({
+          type: 'focus-area',
+          text: `PRIORITY INTERVENTION: Focus on ${student.strugglingWith.join(', ')} - student is actively struggling with these topics.`
+        });
+      } else {
+        insights.push({
+          type: 'focus-area',
+          text: `STRONG PERFORMANCE: Student demonstrates conceptual clarity. Consider advancing to more challenging material or peer mentoring roles.`
+        });
+      }
+    } else if (isGroup) {
+      const avgDoubts = (totalDoubts / filteredActivities.length).toFixed(1);
+      const avgVideos = (totalVideos / filteredActivities.length).toFixed(1);
+      const strugglingPct = ((strugglingStudents / filteredActivities.length) * 100).toFixed(0);
+      
+      insights.push({
+        type: 'academic-state',
+        text: `Selected group (${filteredActivities.length} students): ${strugglingPct}% struggling, ${confidentStudents} confident. Average ${avgDoubts} doubts and ${avgVideos} videos per student - indicating ${parseFloat(avgDoubts) > 7 ? 'active engagement but conceptual gaps' : parseFloat(avgDoubts) > 4 ? 'moderate engagement' : 'low engagement or high confidence'}.`
+      });
+
+      // Group topic analysis
+      const groupTopics = new Map<string, number>();
+      filteredActivities.forEach(s => {
+        s.strugglingWith.forEach(topic => {
+          groupTopics.set(topic, (groupTopics.get(topic) || 0) + 1);
+        });
+      });
+      
+      if (groupTopics.size > 0) {
+        const topTopics = Array.from(groupTopics.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([topic, count]) => `${topic} (${count} students)`);
+        
+        insights.push({
+          type: 'focus-area',
+          text: `TARGETED INTERVENTION NEEDED: ${topTopics.join(', ')}. Recommend small-group focused sessions for these topics.`
+        });
+      }
+    } else {
+      // Whole class analysis
+      const avgDoubts = (totalDoubts / filteredActivities.length).toFixed(1);
+      const avgVideos = (totalVideos / filteredActivities.length).toFixed(1);
+      const strugglingPct = ((strugglingStudents / filteredActivities.length) * 100).toFixed(0);
+      const improvingPct = ((improvingStudents / filteredActivities.length) * 100).toFixed(0);
+      
+      insights.push({
+        type: 'academic-state',
+        text: `CLASS OVERVIEW: ${strugglingPct}% struggling (${strugglingStudents} students), ${improvingPct}% showing improvement (${improvingStudents} students), ${confidentStudents} confident. Class average: ${avgDoubts} doubts, ${avgVideos} videos - overall ${parseFloat(avgDoubts) > 6 ? 'HIGH engagement with conceptual challenges' : parseFloat(avgDoubts) > 3 ? 'MODERATE engagement' : 'LOW engagement or strong mastery'}.`
+      });
+
+      // Identify student groups needing attention
+      const highStrugglers = filteredActivities.filter(s => s.doubtsAsked > 8 && s.status === 'struggling');
+      const lowEngagers = filteredActivities.filter(s => s.doubtsAsked < 3 && s.videosWatched < 6);
+      
+      if (highStrugglers.length > 0) {
+        insights.push({
+          type: 'focus-area',
+          text: `URGENT: ${highStrugglers.map(s => s.name).join(', ')} need immediate intervention - high doubts (${highStrugglers.map(s => s.doubtsAsked).join(', ')}) indicate serious conceptual gaps.`
+        });
+      }
+      
+      if (lowEngagers.length > 0) {
+        insights.push({
+          type: 'focus-area',
+          text: `ENGAGEMENT CONCERN: ${lowEngagers.map(s => s.name).join(', ')} show low activity - requires motivation check or alternative teaching approach.`
+        });
+      }
+    }
+
+    // Topic-based recommendations
+    if (filters.topic) {
+      insights.push({
+        type: 'recommendation',
+        text: `Topic Filter Active (${filters.topic}): Focus remedial sessions on this specific topic. Consider breaking down into sub-concepts with visual aids and hands-on activities.`
+      });
+    }
+
+    // Subject-based recommendations
+    if (filters.subject !== 'All Subjects') {
+      const topicMap: { [key: string]: string[] } = {
+        'Biology': ['Cell Biology', 'Genetics', 'Evolution'],
+        'Molecular Biology': ['DNA Structure', 'Protein Synthesis'],
+        'Anatomy & Physiology': ['Homeostasis'],
+        'Ecology': ['Ecosystems', 'Food Chains']
+      };
+      
+      const suggestedTopics = topicMap[filters.subject] || [];
+      if (suggestedTopics.length > 0 && strugglingStudents > 0) {
+        insights.push({
+          type: 'recommendation',
+          text: `${filters.subject} RECOMMENDATION: Based on struggle patterns, prioritize ${suggestedTopics.slice(0, 2).join(' and ')} with struggling students. Use differentiated instruction - visual learners need diagrams, kinesthetic learners need lab activities.`
+        });
+      }
+    }
+
+    // Engagement level filter insights
+    if (filters.engagementLevel) {
+      const levelText = filters.engagementLevel === 'low' ? 'LOW engagement students need motivation, 1-on-1 check-ins, and alternative teaching methods' :
+                       filters.engagementLevel === 'medium' ? 'MEDIUM engagement students are on track - maintain momentum with regular formative assessments' :
+                       'HIGH engagement students are excelling - consider enrichment activities, peer tutoring roles, or advanced material';
+      
+      insights.push({
+        type: 'recommendation',
+        text: `Engagement Filter Active (${filters.engagementLevel.toUpperCase()}): ${levelText}.`
+      });
+    }
+
+    return insights;
+  };
+
+  const academicInsights = generateAcademicInsights();
 
   const getStatusColor = (status: string) => {
     if (status === 'confident') return 'text-green-600 bg-green-100';
@@ -129,17 +262,6 @@ export function ClassInsights({ filters }: ClassInsightsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <div className="flex items-center gap-3 mb-4">
-          <Brain className="w-6 h-6 text-purple-600" />
-          <h2 className="text-gray-900">Class Insights</h2>
-        </div>
-        <p className="text-gray-600">
-          AI-powered insights into student learning behavior, engagement patterns, and areas requiring attention
-        </p>
-      </div>
-
       {/* Summary Metrics */}
       <div className="grid grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg border border-gray-200">
@@ -186,29 +308,48 @@ export function ClassInsights({ filters }: ClassInsightsProps) {
         </div>
         
         {/* Learning Behavior Inference - Moved above the table */}
-        <div className="p-6 border-b border-gray-200 bg-blue-50">
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
           <div className="flex items-start gap-3">
-            <Brain className="w-5 h-5 text-blue-600 mt-0.5" />
+            <Brain className="w-6 h-6 text-purple-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <h4 className="text-blue-900 mb-2">Learning Behavior Insights</h4>
-              <ul className="space-y-2 text-blue-800">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 mt-1">•</span>
-                  <span>Students who ask more doubts (8+) are actively engaging but may need targeted intervention on specific topics</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 mt-1">•</span>
-                  <span>High video consumption paired with high doubts indicates students are self-learning but encountering conceptual gaps</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 mt-1">•</span>
-                  <span>Students with low engagement (fewer doubts and videos) may require motivation or are already confident with the material</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 mt-1">•</span>
-                  <span><strong>Recommendation:</strong> Focus additional support on Liam Smith and Noah Davis who show high struggle patterns</span>
-                </li>
-              </ul>
+              <h4 className="text-purple-900 mb-3 flex items-center gap-2">
+                <span>Academic & Learning State Analysis</span>
+                <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">AI-Generated</span>
+              </h4>
+              <div className="space-y-3">
+                {academicInsights.map((insight, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`p-3 rounded-lg ${
+                      insight.type === 'academic-state' ? 'bg-blue-100 border border-blue-200' :
+                      insight.type === 'focus-area' ? 'bg-orange-100 border border-orange-200' :
+                      'bg-green-100 border border-green-200'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className={`mt-0.5 ${
+                        insight.type === 'academic-state' ? 'text-blue-600' :
+                        insight.type === 'focus-area' ? 'text-orange-600' :
+                        'text-green-600'
+                      }`}>
+                        {insight.type === 'academic-state' ? '📊' : insight.type === 'focus-area' ? '🎯' : '💡'}
+                      </div>
+                      <p className={`text-sm ${
+                        insight.type === 'academic-state' ? 'text-blue-900' :
+                        insight.type === 'focus-area' ? 'text-orange-900' :
+                        'text-green-900'
+                      }`}>
+                        {insight.text}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-purple-200">
+                <p className="text-xs text-purple-700 italic">
+                  💡 Tip: Adjust filters above (Subject, Topic, Students, Engagement Level) to get targeted insights for specific groups or individuals.
+                </p>
+              </div>
             </div>
           </div>
         </div>

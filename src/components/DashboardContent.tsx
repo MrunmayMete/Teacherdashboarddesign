@@ -10,7 +10,9 @@ interface DashboardContentProps {
     subject: string;
     students: string[];
     topic: string | null;
+    engagementLevel: 'low' | 'medium' | 'high' | null;
   };
+  setFilters: (filters: any) => void;
 }
 
 const attendanceData = [
@@ -172,7 +174,7 @@ const activitiesData: { [key: string]: any[] } = {
   ],
 };
 
-export function DashboardContent({ filters }: DashboardContentProps) {
+export function DashboardContent({ filters, setFilters }: DashboardContentProps) {
   const getRecentActivities = () => {
     // Priority: Student > Subject > Class > Default
     if (filters.students.length > 0 && activitiesData[filters.students[0]]) {
@@ -273,10 +275,15 @@ export function DashboardContent({ filters }: DashboardContentProps) {
   const tileInferences = generateTileInferences();
 
   return (
-    <div className="flex-1 p-8">
-      {/* Engagement Scatter Plot - Moved to Top */}
+    <div className="flex-1 px-8 py-4">
+      {/* Class Insights - Individual Student Behavior on Top */}
       <div className="mb-8">
-        <EngagementScatterPlot filters={filters} />
+        <ClassInsights filters={filters} />
+      </div>
+
+      {/* Engagement Scatter Plot */}
+      <div className="mb-8">
+        <EngagementScatterPlot filters={filters} setFilters={setFilters} />
       </div>
 
       {/* New Dashboard Tiles */}
@@ -450,11 +457,6 @@ export function DashboardContent({ filters }: DashboardContentProps) {
           iconBg="bg-yellow-100"
           iconColor="text-yellow-600"
         />
-      </div>
-
-      {/* Class Insights */}
-      <div className="mb-8">
-        <ClassInsights filters={filters} />
       </div>
     </div>
   );

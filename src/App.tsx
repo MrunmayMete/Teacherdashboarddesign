@@ -15,12 +15,13 @@ export default function App() {
     class: 'All Classes',
     subject: 'All Subjects',
     students: [] as string[],
-    topic: null as string | null
+    topic: null as string | null,
+    engagementLevel: null as 'low' | 'medium' | 'high' | null
   });
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'queries' | 'performance' | 'content' | 'notes'>('dashboard');
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-[140px] overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 pt-[80px] overflow-x-hidden">
       {/* Filter Bar */}
       <FilterBar filters={filters} setFilters={setFilters} currentPage={currentPage} setCurrentPage={setCurrentPage} />
 
