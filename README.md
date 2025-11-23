@@ -1,1 +1,11 @@
-# repo-template
+
+  # Teacher Dashboard Design
+
+  This is a code bundle for Teacher Dashboard Design. The original project is available at https://www.figma.com/design/ePLRSxDBgcZ90q5JOpQr6M/Teacher-Dashboard-Design.
+
+  ## Running the code
+
+  Run `npm i` to install the dependencies.
+
+  Run `npm run dev` to start the development server.
+  
