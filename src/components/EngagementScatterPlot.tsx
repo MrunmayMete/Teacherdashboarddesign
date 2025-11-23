@@ -1,5 +1,6 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Users, Brain, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 
 interface EngagementScatterPlotProps {
   filters: {
@@ -58,6 +59,11 @@ const generateEngagementData = (studentNames: string[]): StudentEngagementData[]
 };
 
 export function EngagementScatterPlot({ filters, setFilters }: EngagementScatterPlotProps) {
+  const [showActiveStudents, setShowActiveStudents] = useState(false);
+  
+  // Define currently active students (simulated - in real app this would come from live data)
+  const currentlyActiveStudents = ['Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 'Sophia Anderson'];
+  
   // Filter students based on dashboard filters
   const selectedStudents = filters.students.length > 0 
     ? filters.students 
@@ -246,12 +252,104 @@ export function EngagementScatterPlot({ filters, setFilters }: EngagementScatter
             
             <div className="w-px h-8 bg-gray-300 mx-2" />
             
-            <button
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-2"
-            >
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Currently Active Students
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowActiveStudents(!showActiveStudents)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                  showActiveStudents
+                    ? 'bg-blue-600 text-white shadow-md scale-105'
+                    : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+                }`}
+              >
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                Currently Active Students
+                <span className="ml-1 px-2 py-0.5 bg-blue-600 text-white rounded-full text-xs">
+                  {currentlyActiveStudents.length}
+                </span>
+              </button>
+              
+              {/* Active Students Dropdown */}
+              {showActiveStudents && (
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-80 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-200 bg-blue-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-gray-800">Active Students</h4>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        Online Now
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      Students currently engaged in learning activities
+                    </p>
+                  </div>
+                  
+                  <div className="p-2">
+                    {currentlyActiveStudents.map((student, index) => {
+                      const studentData = engagementData.filter(d => d.student === student);
+                      const avgEngagement = studentData.length > 0
+                        ? Math.round(studentData.reduce((sum, d) => sum + d.engagement, 0) / studentData.length)
+                        : 0;
+                      const lastActivity = ['2 min ago', '5 min ago', '8 min ago', '10 min ago', '12 min ago'][index];
+                      
+                      return (
+                        <button
+                          key={student}
+                          onClick={() => {
+                            setFilters && setFilters({ ...filters, students: [student] });
+                            setShowActiveStudents(false);
+                          }}
+                          className="w-full p-3 rounded-lg hover:bg-blue-50 transition-colors text-left border border-transparent hover:border-blue-200 mb-1"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm">
+                                {student.split(' ').map(n => n[0]).join('')}
+                              </div>
+                              <div>
+                                <div className="text-gray-800 text-sm">{student}</div>
+                                <div className="text-xs text-gray-500">{lastActivity}</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className={`text-xs px-2 py-1 rounded-full ${
+                                avgEngagement >= 70 ? 'bg-green-100 text-green-700' :
+                                avgEngagement >= 50 ? 'bg-lime-100 text-lime-700' :
+                                'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {avgEngagement}%
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div 
+                              className={`h-1.5 rounded-full ${
+                                avgEngagement >= 70 ? 'bg-green-500' :
+                                avgEngagement >= 50 ? 'bg-lime-500' :
+                                'bg-yellow-500'
+                              }`}
+                              style={{ width: `${avgEngagement}%` }}
+                            />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="p-3 border-t border-gray-200 bg-gray-50">
+                    <button
+                      onClick={() => {
+                        setFilters && setFilters({ ...filters, students: currentlyActiveStudents });
+                        setShowActiveStudents(false);
+                      }}
+                      className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                    >
+                      View All Active Students
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
             
             {filters.engagementLevel && (
               <button

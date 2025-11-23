@@ -1,4 +1,6 @@
 import { Brain, Video, HelpCircle, AlertTriangle, TrendingUp, Clock, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { EngagementScatterPlot } from './EngagementScatterPlot';
 
 interface ClassInsightsProps {
   filters: {
@@ -8,6 +10,7 @@ interface ClassInsightsProps {
     topic: string | null;
     engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
+  setFilters?: (filters: any) => void;
 }
 
 interface StudentActivity {
@@ -93,7 +96,9 @@ const topicStruggles: TopicStruggle[] = [
   { topic: 'Statistics', studentsAffected: 3, avgDoubts: 4.2, severity: 'low' },
 ];
 
-export function ClassInsights({ filters }: ClassInsightsProps) {
+export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
+  const [activeTab, setActiveTab] = useState<'behavior' | 'engagement'>('behavior');
+  
   // Filter activities based on selected student
   const getFilteredActivities = () => {
     if (filters.students.length > 0) {
@@ -262,158 +267,148 @@ export function ClassInsights({ filters }: ClassInsightsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600">Total Doubts</span>
-            <HelpCircle className="w-5 h-5 text-blue-500" />
-          </div>
-          <div className="text-blue-600 mb-1">{totalDoubts}</div>
-          <div className="text-gray-500">Questions asked</div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600">Videos Watched</span>
-            <Video className="w-5 h-5 text-green-500" />
-          </div>
-          <div className="text-green-600 mb-1">{totalVideos}</div>
-          <div className="text-gray-500">Learning materials</div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600">Struggling</span>
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-          </div>
-          <div className="text-red-600 mb-1">{strugglingStudents} students</div>
-          <div className="text-gray-500">Need attention</div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600">Improving</span>
-            <TrendingUp className="w-5 h-5 text-blue-500" />
-          </div>
-          <div className="text-blue-600 mb-1">{improvingStudents} students</div>
-          <div className="text-gray-500">Showing progress</div>
-        </div>
-      </div>
-
-      {/* Student Activity Details */}
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-gray-800">Individual Student Behavior</h3>
-        </div>
-        
-        {/* Learning Behavior Inference - Moved above the table */}
-        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
-          <div className="flex items-start gap-3">
-            <Brain className="w-6 h-6 text-purple-600 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <h4 className="text-purple-900 mb-3 flex items-center gap-2">
-                <span>Academic & Learning State Analysis</span>
-                <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">AI-Generated</span>
-              </h4>
-              <div className="space-y-3">
-                {academicInsights.map((insight, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`p-3 rounded-lg ${
-                      insight.type === 'academic-state' ? 'bg-blue-100 border border-blue-200' :
-                      insight.type === 'focus-area' ? 'bg-orange-100 border border-orange-200' :
-                      'bg-green-100 border border-green-200'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className={`mt-0.5 ${
-                        insight.type === 'academic-state' ? 'text-blue-600' :
-                        insight.type === 'focus-area' ? 'text-orange-600' :
-                        'text-green-600'
-                      }`}>
-                        {insight.type === 'academic-state' ? '📊' : insight.type === 'focus-area' ? '🎯' : '💡'}
-                      </div>
-                      <p className={`text-sm ${
-                        insight.type === 'academic-state' ? 'text-blue-900' :
-                        insight.type === 'focus-area' ? 'text-orange-900' :
-                        'text-green-900'
-                      }`}>
-                        {insight.text}
-                      </p>
+      {/* Learning Behavior Inference - Outside tabs, on top */}
+      <div className="p-6 border border-gray-200 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex items-start gap-3">
+          <Brain className="w-6 h-6 text-purple-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h4 className="text-purple-900 mb-3 flex items-center gap-2">
+              <span>Academic & Learning State Analysis</span>
+              <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">AI-Generated</span>
+            </h4>
+            <div className="space-y-3">
+              {academicInsights.map((insight, idx) => (
+                <div 
+                  key={idx} 
+                  className={`p-3 rounded-lg ${
+                    insight.type === 'academic-state' ? 'bg-blue-100 border border-blue-200' :
+                    insight.type === 'focus-area' ? 'bg-orange-100 border border-orange-200' :
+                    'bg-green-100 border border-green-200'
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className={`mt-0.5 ${
+                      insight.type === 'academic-state' ? 'text-blue-600' :
+                      insight.type === 'focus-area' ? 'text-orange-600' :
+                      'text-green-600'
+                    }`}>
+                      {insight.type === 'academic-state' ? '📊' : insight.type === 'focus-area' ? '🎯' : '💡'}
                     </div>
+                    <p className={`text-sm ${
+                      insight.type === 'academic-state' ? 'text-blue-900' :
+                      insight.type === 'focus-area' ? 'text-orange-900' :
+                      'text-green-900'
+                    }`}>
+                      {insight.text}
+                    </p>
                   </div>
-                ))}
-              </div>
-              <div className="mt-4 pt-3 border-t border-purple-200">
-                <p className="text-xs text-purple-700 italic">
-                  💡 Tip: Adjust filters above (Subject, Topic, Students, Engagement Level) to get targeted insights for specific groups or individuals.
-                </p>
-              </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t border-purple-200">
+              <p className="text-xs text-purple-700 italic">
+                💡 Tip: Adjust filters above (Subject, Topic, Students, Engagement Level) to get targeted insights for specific groups or individuals.
+              </p>
             </div>
           </div>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-gray-600">Student</th>
-                <th className="px-6 py-4 text-left text-gray-600">Doubts Asked</th>
-                <th className="px-6 py-4 text-left text-gray-600">Videos Watched</th>
-                <th className="px-6 py-4 text-left text-gray-600">Time Spent</th>
-                <th className="px-6 py-4 text-left text-gray-600">Struggling With</th>
-                <th className="px-6 py-4 text-left text-gray-600">Status</th>
-                <th className="px-6 py-4 text-left text-gray-600">Last Activity</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredActivities.map((student, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-800">{student.name}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-700">{student.doubtsAsked}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Video className="w-4 h-4 text-green-500" />
-                      <span className="text-gray-700">{student.videosWatched}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-700">{student.timeSpent}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    {student.strugglingWith.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {student.strugglingWith.map((topic, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
-                            {topic}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">None</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(student.status)}`}>
-                      {getStatusIcon(student.status)}
-                      <span className="capitalize">{student.status}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-500">{student.lastActivity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      </div>
+
+      {/* Tabbed Content */}
+      <div className="bg-white rounded-lg border border-gray-200">
+        {/* Tab Headers */}
+        <div className="border-b border-gray-200">
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab('behavior')}
+              className={`px-6 py-4 border-b-2 transition-colors ${
+                activeTab === 'behavior'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+              }`}
+            >
+              Individual Student Behavior
+            </button>
+            <button
+              onClick={() => setActiveTab('engagement')}
+              className={`px-6 py-4 border-b-2 transition-colors ${
+                activeTab === 'engagement'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+              }`}
+            >
+              Student Engagement by Topic
+            </button>
+          </div>
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'behavior' ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-gray-600">Student</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Doubts Asked</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Videos Watched</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Time Spent</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Struggling With</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Status</th>
+                  <th className="px-6 py-4 text-left text-gray-600">Last Activity</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredActivities.map((student, index) => (
+                  <tr key={index} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-gray-800">{student.name}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <HelpCircle className="w-4 h-4 text-blue-500" />
+                        <span className="text-gray-700">{student.doubtsAsked}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Video className="w-4 h-4 text-green-500" />
+                        <span className="text-gray-700">{student.videosWatched}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-700">{student.timeSpent}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {student.strugglingWith.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {student.strugglingWith.map((topic, idx) => (
+                            <span key={idx} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
+                              {topic}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">None</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(student.status)}`}>
+                        {getStatusIcon(student.status)}
+                        <span className="capitalize">{student.status}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">{student.lastActivity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="p-6">
+            <EngagementScatterPlot filters={filters} />
+          </div>
+        )}
       </div>
     </div>
   );

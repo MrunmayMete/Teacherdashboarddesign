@@ -278,7 +278,7 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
     <div className="flex-1 px-8 py-4">
       {/* Class Insights - Individual Student Behavior on Top */}
       <div className="mb-8">
-        <ClassInsights filters={filters} />
+        <ClassInsights filters={filters} setFilters={setFilters} />
       </div>
 
       {/* Student-Specific Tile Inferences - Moved above Engagement Scatter Plot */}
@@ -309,11 +309,6 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
           </div>
         </div>
       )}
-
-      {/* Engagement Scatter Plot */}
-      <div className="mb-8">
-        <EngagementScatterPlot filters={filters} setFilters={setFilters} />
-      </div>
 
       {/* New Dashboard Tiles */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

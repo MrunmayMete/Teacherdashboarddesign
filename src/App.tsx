@@ -59,7 +59,7 @@ export default function App() {
 
       <div className="flex relative">
         {/* Fixed Sidebar */}
-        <div className="w-56 flex-shrink-0">
+        <div className="w-64 flex-shrink-0">
           <Sidebar filters={filters} setFilters={setFilters} currentPage={currentPage} setCurrentPage={setCurrentPage} />
         </div>
 

@@ -261,23 +261,6 @@ export function FilterBar({ filters, setFilters, currentPage, setCurrentPage, on
           <Dropdown label="Topic" options={topics} value={filters.topic || 'All Topics'} filterType="topic" />
           <Dropdown label="Mode" options={learningModes} value={filters.learningMode} filterType="learningMode" />
           <MultiSelectDropdown />
-          
-          {/* Display selected students as chips */}
-          {filters.students.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              {filters.students.map((student) => (
-                <div key={student} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                  <span>{student}</span>
-                  <button
-                    onClick={() => removeStudent(student)}
-                    className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
         
         {/* Right side - Logout Button */}
