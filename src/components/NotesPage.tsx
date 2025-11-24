@@ -1,5 +1,6 @@
 import { FileText, Eye, TrendingUp, BookMarked, Brain, BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell } from 'recharts';
+import { BIOLOGY_TOPICS } from '../constants/biologyTopics';
 
 interface NotesPageProps {
   filters: {
@@ -9,6 +10,7 @@ interface NotesPageProps {
     topic: string | null;
     engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
+  setFilters: (filters: any) => void;
 }
 
 interface TopicNote {
@@ -22,87 +24,18 @@ interface TopicNote {
 }
 
 const topicNotesData: TopicNote[] = [
-  {
-    topic: 'Calculus',
-    queriesMade: 45,
-    notesMade: 28,
-    timesReferred: 156,
-    avgReferenceTime: '3.2 mins',
-    lastUpdated: '2 hours ago',
-    popularityScore: 95
-  },
-  {
-    topic: 'Algebra',
-    queriesMade: 38,
-    notesMade: 22,
-    timesReferred: 134,
-    avgReferenceTime: '2.8 mins',
-    lastUpdated: '5 hours ago',
-    popularityScore: 88
-  },
-  {
-    topic: 'Geometry',
-    queriesMade: 32,
-    notesMade: 18,
-    timesReferred: 98,
-    avgReferenceTime: '2.5 mins',
-    lastUpdated: '1 day ago',
-    popularityScore: 72
-  },
-  {
-    topic: 'Trigonometry',
-    queriesMade: 28,
-    notesMade: 15,
-    timesReferred: 87,
-    avgReferenceTime: '2.1 mins',
-    lastUpdated: '6 hours ago',
-    popularityScore: 68
-  },
-  {
-    topic: 'Linear Equations',
-    queriesMade: 25,
-    notesMade: 14,
-    timesReferred: 76,
-    avgReferenceTime: '2.0 mins',
-    lastUpdated: '3 hours ago',
-    popularityScore: 62
-  },
-  {
-    topic: 'Quadratic Equations',
-    queriesMade: 22,
-    notesMade: 12,
-    timesReferred: 65,
-    avgReferenceTime: '1.8 mins',
-    lastUpdated: '8 hours ago',
-    popularityScore: 55
-  },
-  {
-    topic: 'Fractions',
-    queriesMade: 18,
-    notesMade: 10,
-    timesReferred: 52,
-    avgReferenceTime: '1.5 mins',
-    lastUpdated: '12 hours ago',
-    popularityScore: 48
-  },
-  {
-    topic: 'Statistics',
-    queriesMade: 15,
-    notesMade: 8,
-    timesReferred: 38,
-    avgReferenceTime: '1.2 mins',
-    lastUpdated: '1 day ago',
-    popularityScore: 35
-  },
-  {
-    topic: 'Probability',
-    queriesMade: 12,
-    notesMade: 6,
-    timesReferred: 24,
-    avgReferenceTime: '1.0 min',
-    lastUpdated: '2 days ago',
-    popularityScore: 22
-  }
+  { topic: 'Cell Structure', queriesMade: 28, notesMade: 45, timesReferred: 67, avgReferenceTime: '8.5 min', lastUpdated: '2 hrs ago', popularityScore: 85 },
+  { topic: 'Cell Division (Mitosis & Meiosis)', queriesMade: 45, notesMade: 52, timesReferred: 89, avgReferenceTime: '12.3 min', lastUpdated: '1 hr ago', popularityScore: 92 },
+  { topic: 'DNA & Genetics', queriesMade: 52, notesMade: 68, timesReferred: 105, avgReferenceTime: '15.2 min', lastUpdated: '30 min ago', popularityScore: 95 },
+  { topic: 'Photosynthesis', queriesMade: 31, notesMade: 38, timesReferred: 52, avgReferenceTime: '9.1 min', lastUpdated: '3 hrs ago', popularityScore: 78 },
+  { topic: 'Cellular Respiration', queriesMade: 36, notesMade: 42, timesReferred: 71, avgReferenceTime: '10.5 min', lastUpdated: '1.5 hrs ago', popularityScore: 82 },
+  { topic: 'Protein Synthesis', queriesMade: 58, notesMade: 61, timesReferred: 98, avgReferenceTime: '14.8 min', lastUpdated: '45 min ago', popularityScore: 91 },
+  { topic: 'Evolution & Natural Selection', queriesMade: 22, notesMade: 18, timesReferred: 28, avgReferenceTime: '6.2 min', lastUpdated: '5 hrs ago', popularityScore: 55 },
+  { topic: 'Ecosystems & Biodiversity', queriesMade: 25, notesMade: 32, timesReferred: 48, avgReferenceTime: '7.8 min', lastUpdated: '2.5 hrs ago', popularityScore: 72 },
+  { topic: 'Human Body Systems', queriesMade: 48, notesMade: 55, timesReferred: 82, avgReferenceTime: '13.4 min', lastUpdated: '1 hr ago', popularityScore: 88 },
+  { topic: 'Plant Biology', queriesMade: 20, notesMade: 28, timesReferred: 35, avgReferenceTime: '6.9 min', lastUpdated: '4 hrs ago', popularityScore: 68 },
+  { topic: 'Microbiology & Viruses', queriesMade: 35, notesMade: 24, timesReferred: 42, avgReferenceTime: '8.1 min', lastUpdated: '6 hrs ago', popularityScore: 62 },
+  { topic: 'Enzymes & Metabolism', queriesMade: 42, notesMade: 48, timesReferred: 76, avgReferenceTime: '11.7 min', lastUpdated: '2 hrs ago', popularityScore: 84 }
 ];
 
 // Notes creation trend over time
@@ -123,7 +56,7 @@ const noteTypesData = [
   { type: 'Quick Tips', count: 28 }
 ];
 
-export function NotesPage({ filters }: NotesPageProps) {
+export function NotesPage({ filters, setFilters }: NotesPageProps) {
   // Calculate metrics
   const totalQueries = topicNotesData.reduce((sum, t) => sum + t.queriesMade, 0);
   const totalNotes = topicNotesData.reduce((sum, t) => sum + t.notesMade, 0);
@@ -213,7 +146,7 @@ export function NotesPage({ filters }: NotesPageProps) {
 
       {/* Charts Row */}
       <div className="grid grid-cols-2 gap-6 mb-8">
-        {/* Notes & References Trend */}
+        {/* Notes & References Trend - MADE INTERACTIVE */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-gray-800 mb-4">Notes Creation & Reference Trend</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -221,15 +154,34 @@ export function NotesPage({ filters }: NotesPageProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="week" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                cursor={{ stroke: '#3b82f6', strokeWidth: 1 }}
+              />
               <Legend />
-              <Line type="monotone" dataKey="notes" stroke="#3b82f6" strokeWidth={2} name="Notes Created" />
-              <Line type="monotone" dataKey="references" stroke="#10b981" strokeWidth={2} name="References" />
+              <Line 
+                type="monotone" 
+                dataKey="notes" 
+                stroke="#3b82f6" 
+                strokeWidth={2} 
+                name="Notes Created"
+                dot={{ r: 4, strokeWidth: 2, fill: '#fff', cursor: 'pointer' }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="references" 
+                stroke="#10b981" 
+                strokeWidth={2} 
+                name="References"
+                dot={{ r: 4, strokeWidth: 2, fill: '#fff', cursor: 'pointer' }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Note Types Distribution */}
+        {/* Note Types Distribution - MADE INTERACTIVE */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-gray-800 mb-4">Note Types Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -243,12 +195,15 @@ export function NotesPage({ filters }: NotesPageProps) {
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="count"
+                cursor="pointer"
               >
                 {noteTypesData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -339,42 +294,59 @@ export function NotesPage({ filters }: NotesPageProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {topicNotesData.map((topic, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-800">{topic.topic}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <BookMarked className="w-4 h-4 text-purple-500" />
-                      <span className="text-gray-700">{topic.queriesMade}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-700">{topic.notesMade}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4 text-green-500" />
-                      <span className="text-gray-700">{topic.timesReferred}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">{topic.avgReferenceTime}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className={getPopularityColor(topic.popularityScore)}>{topic.popularityScore}</span>
-                      <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-500"
-                          style={{ width: `${topic.popularityScore}%` }}
-                        />
+              {topicNotesData.map((topic, index) => {
+                const isSelected = filters.topic === topic.topic;
+                return (
+                  <tr 
+                    key={index} 
+                    className={`transition-colors cursor-pointer ${
+                      isSelected ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-blue-50'
+                    }`}
+                    onClick={() => {
+                      // Toggle topic filter
+                      if (isSelected) {
+                        setFilters({ ...filters, topic: null });
+                      } else {
+                        setFilters({ ...filters, topic: topic.topic });
+                      }
+                    }}
+                    title={isSelected ? `Click to deselect ${topic.topic}` : `Click to filter by ${topic.topic}`}
+                  >
+                    <td className="px-6 py-4 text-gray-800 font-medium">{topic.topic}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <BookMarked className="w-4 h-4 text-purple-500" />
+                        <span className="text-gray-700">{topic.queriesMade}</span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-500">{topic.lastUpdated}</td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-blue-500" />
+                        <span className="text-gray-700">{topic.notesMade}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-green-500" />
+                        <span className="text-gray-700">{topic.timesReferred}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">{topic.avgReferenceTime}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className={getPopularityColor(topic.popularityScore)}>{topic.popularityScore}</span>
+                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 transition-all"
+                            style={{ width: `${topic.popularityScore}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">{topic.lastUpdated}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -11,6 +11,7 @@ interface PerformancePageProps {
     topic: string | null;
     engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
+  setFilters: (filters: any) => void;
 }
 
 // Performance trend data
@@ -66,7 +67,7 @@ const performanceCategoriesData = [
 
 type SortKey = 'name' | 'average' | 'improvement';
 
-export function PerformancePage({ filters }: PerformancePageProps) {
+export function PerformancePage({ filters, setFilters }: PerformancePageProps) {
   const [sortBy, setSortBy] = useState<SortKey>('average');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [performanceFilter, setPerformanceFilter] = useState<'all' | 'high' | 'medium' | 'low' | 'declining'>('all');
@@ -147,208 +148,281 @@ export function PerformancePage({ filters }: PerformancePageProps) {
       <div className="mb-6 flex items-center gap-4">
         <span className="text-gray-600">Filter by Performance:</span>
         <div className="flex gap-2">
-          {[
-            { value: 'all', label: 'All Students' },
-            { value: 'high', label: 'High (≥85%)' },
-            { value: 'medium', label: 'Medium (70-84%)' },
-            { value: 'low', label: 'Low (<70%)' },
-            { value: 'declining', label: 'Declining' }
-          ].map(filter => (
+          {(['all', 'high', 'medium', 'low', 'declining'] as const).map((filter) => (
             <button
-              key={filter.value}
-              onClick={() => setPerformanceFilter(filter.value as any)}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                performanceFilter === filter.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              key={filter}
+              onClick={() => setPerformanceFilter(filter)}
+              className={`px-4 py-2 rounded-lg transition-all ${
+                performanceFilter === filter
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
               }`}
             >
-              {filter.label}
+              {filter === 'all' ? 'All Students' : 
+               filter === 'high' ? 'High (≥85%)' :
+               filter === 'medium' ? 'Medium (70-84%)' :
+               filter === 'low' ? 'Low (<70%)' :
+               'Declining'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Class Average</span>
-            <Target className="w-5 h-5 text-blue-500" />
+            <Award className="w-5 h-5 text-blue-600" />
           </div>
-          <div className="text-blue-600 mb-1">{classAverage}%</div>
-          <div className="text-gray-500">Overall performance</div>
+          <div className="text-gray-900">{classAverage}%</div>
+          <p className="text-gray-500 mt-1">Overall performance</p>
         </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Top Performers</span>
-            <Award className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-green-600" />
           </div>
-          <div className="text-green-600 mb-1">{topPerformers} students</div>
-          <div className="text-gray-500">Scoring ≥90%</div>
+          <div className="text-gray-900">{topPerformers} Students</div>
+          <p className="text-gray-500 mt-1">Scoring ≥90%</p>
         </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Needs Support</span>
-            <AlertCircle className="w-5 h-5 text-red-500" />
+            <AlertCircle className="w-5 h-5 text-orange-600" />
           </div>
-          <div className="text-red-600 mb-1">{needsSupport} students</div>
-          <div className="text-gray-500">Scoring {'<'}70%</div>
+          <div className="text-gray-900">{needsSupport} Students</div>
+          <p className="text-gray-500 mt-1">Scoring &lt;70%</p>
         </div>
-
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600">Avg Improvement</span>
             {avgImprovement >= 0 ? (
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <TrendingUp className="w-5 h-5 text-green-600" />
             ) : (
-              <TrendingDown className="w-5 h-5 text-red-500" />
+              <TrendingDown className="w-5 h-5 text-red-600" />
             )}
           </div>
-          <div className={avgImprovement >= 0 ? 'text-green-600 mb-1' : 'text-red-600 mb-1'}>
+          <div className={`text-gray-900 ${getImprovementColor(avgImprovement)}`}>
             {avgImprovement > 0 ? '+' : ''}{avgImprovement}%
           </div>
-          <div className="text-gray-500">vs last month</div>
+          <p className="text-gray-500 mt-1">From last period</p>
         </div>
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        {/* Performance Trend */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-gray-800 mb-4">Performance Trend (6 Months)</h3>
+      <div className="grid grid-cols-2 gap-6 mb-6">
+        {/* Performance Trend Chart - MADE INTERACTIVE */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-gray-800 mb-4">Performance Trends</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={performanceTrendData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="month" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" domain={[60, 90]} />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" stroke="#666" />
+              <YAxis stroke="#666" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                cursor={{ stroke: '#3b82f6', strokeWidth: 1 }}
+              />
               <Legend />
-              <Line type="monotone" dataKey="average" stroke="#3b82f6" strokeWidth={2} name="School Average" />
-              <Line type="monotone" dataKey="class" stroke="#10b981" strokeWidth={2} name="Class Average" />
-              <Line type="monotone" dataKey="individual" stroke="#8b5cf6" strokeWidth={2} name="Individual" />
+              <Line 
+                type="monotone" 
+                dataKey="class" 
+                stroke="#3b82f6" 
+                strokeWidth={2} 
+                name="Class Average"
+                dot={{ r: 4, strokeWidth: 2, fill: '#fff', cursor: 'pointer' }}
+                activeDot={{ r: 6, strokeWidth: 2, onClick: (data, index) => {
+                  console.log('Clicked:', data);
+                }}}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="individual" 
+                stroke="#10b981" 
+                strokeWidth={2} 
+                name="Individual"
+                dot={{ r: 4, strokeWidth: 2, fill: '#fff', cursor: 'pointer' }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Subject Performance */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-gray-800 mb-4">Performance by Subject</h3>
+        {/* Subject Performance Chart - MADE INTERACTIVE */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-gray-800 mb-4">Performance by Topic</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={subjectPerformanceData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="subject" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" domain={[0, 100]} />
-              <Tooltip />
-              <Bar dataKey="score" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="subject" stroke="#666" angle={-15} textAnchor="end" height={80} />
+              <YAxis stroke="#666" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+              />
+              <Bar 
+                dataKey="score" 
+                fill="#3b82f6" 
+                radius={[8, 8, 0, 0]}
+                cursor="pointer"
+                onClick={(data) => {
+                  console.log('Bar clicked:', data);
+                  // Could filter by this subject
+                }}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Performance Categories Radar */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-        <h3 className="text-gray-800 mb-4">Performance by Category</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <RadarChart data={performanceCategoriesData}>
-            <PolarGrid stroke="#e5e7eb" />
-            <PolarAngleAxis dataKey="category" stroke="#6b7280" />
-            <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#6b7280" />
-            <Radar name="Class Performance" dataKey="score" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-            <Tooltip />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Engagement Scatter Plot */}
-      <div className="mb-8">
-        <EngagementScatterPlot filters={filters} />
-      </div>
-
-      {/* Student Performance Table */}
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+      {/* Student Performance Table - MADE INTERACTIVE */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="text-gray-800">Student Performance Details</h3>
+          <div className="flex items-center gap-2 text-gray-600">
+            <ArrowUpDown className="w-4 h-4" />
+            <span>Click column headers to sort</span>
+          </div>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
+            <thead>
+              <tr className="border-b border-gray-200">
                 <th 
                   onClick={() => handleSort('name')}
-                  className="px-6 py-4 text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="text-left p-3 text-gray-600 cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex items-center gap-1">
-                    Student
-                    <ArrowUpDown className="w-3 h-3" />
+                  <div className="flex items-center gap-2">
+                    Student Name
+                    {sortBy === 'name' && (
+                      <ArrowUpDown className="w-4 h-4" />
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort('average')}
-                  className="px-6 py-4 text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="text-center p-3 text-gray-600 cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-2">
                     Average
-                    <ArrowUpDown className="w-3 h-3" />
+                    {sortBy === 'average' && (
+                      <ArrowUpDown className="w-4 h-4" />
+                    )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-gray-600">Assignments</th>
-                <th className="px-6 py-4 text-left text-gray-600">Quizzes</th>
-                <th className="px-6 py-4 text-left text-gray-600">Participation</th>
+                <th className="text-center p-3 text-gray-600">Grade</th>
+                <th className="text-center p-3 text-gray-600">Assignments</th>
+                <th className="text-center p-3 text-gray-600">Quizzes</th>
+                <th className="text-center p-3 text-gray-600">Participation</th>
                 <th 
                   onClick={() => handleSort('improvement')}
-                  className="px-6 py-4 text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="text-center p-3 text-gray-600 cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-2">
                     Improvement
-                    <ArrowUpDown className="w-3 h-3" />
+                    {sortBy === 'improvement' && (
+                      <ArrowUpDown className="w-4 h-4" />
+                    )}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-gray-600">Grade</th>
-                <th className="px-6 py-4 text-left text-gray-600">Trend</th>
+                <th className="text-center p-3 text-gray-600">Trend</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {filteredData.map((student, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-800">{student.name}</td>
-                  <td className="px-6 py-4">
+                <tr 
+                  key={index}
+                  onClick={() => {
+                    // Toggle student selection
+                    const isSelected = filters.students.includes(student.name);
+                    if (isSelected) {
+                      setFilters({
+                        ...filters,
+                        students: filters.students.filter(s => s !== student.name)
+                      });
+                    } else {
+                      setFilters({
+                        ...filters,
+                        students: [...filters.students, student.name]
+                      });
+                    }
+                  }}
+                  className={`border-b border-gray-100 cursor-pointer transition-all ${
+                    filters.students.includes(student.name)
+                      ? 'bg-blue-50 hover:bg-blue-100'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <td className="p-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-700">{student.average}%</span>
-                      <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-500"
-                          style={{ width: `${student.average}%` }}
-                        />
-                      </div>
+                      <div className={`w-2 h-2 rounded-full ${
+                        filters.students.includes(student.name) ? 'bg-blue-600' : 'bg-gray-300'
+                      }`} />
+                      <span className="text-gray-800">{student.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{student.assignments}%</td>
-                  <td className="px-6 py-4 text-gray-700">{student.quizzes}%</td>
-                  <td className="px-6 py-4 text-gray-700">{student.participation}%</td>
-                  <td className="px-6 py-4">
+                  <td className="text-center p-3">
+                    <span className={`px-3 py-1 rounded-full ${
+                      student.average >= 90 ? 'bg-green-100 text-green-700' :
+                      student.average >= 80 ? 'bg-blue-100 text-blue-700' :
+                      student.average >= 70 ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {student.average}%
+                    </span>
+                  </td>
+                  <td className="text-center p-3">
+                    <span className={`px-3 py-1 rounded-full ${getGradeColor(student.grade)}`}>
+                      {student.grade}
+                    </span>
+                  </td>
+                  <td className="text-center p-3 text-gray-700">{student.assignments}%</td>
+                  <td className="text-center p-3 text-gray-700">{student.quizzes}%</td>
+                  <td className="text-center p-3 text-gray-700">{student.participation}%</td>
+                  <td className="text-center p-3">
                     <span className={getImprovementColor(student.improvement)}>
                       {student.improvement > 0 ? '+' : ''}{student.improvement}%
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded text-xs ${getGradeColor(student.grade)}`}>
-                      {student.grade}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {student.trend === 'up' && <TrendingUp className="w-5 h-5 text-green-600" />}
-                    {student.trend === 'down' && <TrendingDown className="w-5 h-5 text-red-600" />}
-                    {student.trend === 'stable' && <div className="w-5 h-0.5 bg-gray-400" />}
+                  <td className="text-center p-3">
+                    {student.trend === 'up' && <TrendingUp className="w-5 h-5 text-green-600 mx-auto" />}
+                    {student.trend === 'down' && <TrendingDown className="w-5 h-5 text-red-600 mx-auto" />}
+                    {student.trend === 'stable' && <div className="w-5 h-0.5 bg-gray-400 mx-auto" />}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Performance Categories Radar - MADE INTERACTIVE */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-gray-800 mb-4">Performance Categories</h3>
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart data={performanceCategoriesData}>
+            <PolarGrid stroke="#e5e7eb" />
+            <PolarAngleAxis dataKey="category" stroke="#666" />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#666" />
+            <Radar 
+              name="Score" 
+              dataKey="score" 
+              stroke="#3b82f6" 
+              fill="#3b82f6" 
+              fillOpacity={0.6}
+              cursor="pointer"
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+            />
+            <Legend />
+          </RadarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

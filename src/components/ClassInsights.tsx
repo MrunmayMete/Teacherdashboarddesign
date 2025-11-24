@@ -1,6 +1,7 @@
 import { Brain, Video, HelpCircle, AlertTriangle, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { EngagementScatterPlot } from './EngagementScatterPlot';
+import { BIOLOGY_TOPICS } from '../constants/biologyTopics';
 
 interface ClassInsightsProps {
   filters: {
@@ -37,7 +38,7 @@ const studentActivitiesData: StudentActivity[] = [
     doubtsAsked: 5,
     videosWatched: 8,
     timeSpent: '2.5 hrs',
-    strugglingWith: ['Quadratic Equations'],
+    strugglingWith: ['DNA & Genetics'],
     status: 'improving',
     lastActivity: '15 mins ago'
   },
@@ -46,7 +47,7 @@ const studentActivitiesData: StudentActivity[] = [
     doubtsAsked: 12,
     videosWatched: 15,
     timeSpent: '3.2 hrs',
-    strugglingWith: ['Calculus', 'Geometry'],
+    strugglingWith: ['Protein Synthesis', 'Cell Division (Mitosis & Meiosis)'],
     status: 'struggling',
     lastActivity: '30 mins ago'
   },
@@ -64,7 +65,7 @@ const studentActivitiesData: StudentActivity[] = [
     doubtsAsked: 8,
     videosWatched: 6,
     timeSpent: '1.8 hrs',
-    strugglingWith: ['Fractions', 'Algebra'],
+    strugglingWith: ['Cellular Respiration', 'Photosynthesis'],
     status: 'struggling',
     lastActivity: '45 mins ago'
   },
@@ -73,7 +74,7 @@ const studentActivitiesData: StudentActivity[] = [
     doubtsAsked: 4,
     videosWatched: 12,
     timeSpent: '3.0 hrs',
-    strugglingWith: ['Statistics'],
+    strugglingWith: ['Evolution & Natural Selection'],
     status: 'improving',
     lastActivity: '20 mins ago'
   },
@@ -82,18 +83,18 @@ const studentActivitiesData: StudentActivity[] = [
     doubtsAsked: 6,
     videosWatched: 9,
     timeSpent: '2.3 hrs',
-    strugglingWith: ['Geometry'],
+    strugglingWith: ['Enzymes & Metabolism'],
     status: 'improving',
     lastActivity: '1 hour ago'
   }
 ];
 
 const topicStruggles: TopicStruggle[] = [
-  { topic: 'Calculus', studentsAffected: 8, avgDoubts: 9.5, severity: 'high' },
-  { topic: 'Geometry', studentsAffected: 6, avgDoubts: 7.2, severity: 'high' },
-  { topic: 'Algebra', studentsAffected: 5, avgDoubts: 6.5, severity: 'medium' },
-  { topic: 'Fractions', studentsAffected: 4, avgDoubts: 5.8, severity: 'medium' },
-  { topic: 'Statistics', studentsAffected: 3, avgDoubts: 4.2, severity: 'low' },
+  { topic: 'Protein Synthesis', studentsAffected: 8, avgDoubts: 9.5, severity: 'high' },
+  { topic: 'Cell Division (Mitosis & Meiosis)', studentsAffected: 6, avgDoubts: 7.2, severity: 'high' },
+  { topic: 'DNA & Genetics', studentsAffected: 5, avgDoubts: 6.5, severity: 'medium' },
+  { topic: 'Enzymes & Metabolism', studentsAffected: 4, avgDoubts: 5.8, severity: 'medium' },
+  { topic: 'Evolution & Natural Selection', studentsAffected: 3, avgDoubts: 4.2, severity: 'low' },
 ];
 
 export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
@@ -351,9 +352,9 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
 
         {/* Tab Content */}
         {activeTab === 'behavior' ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                 <tr>
                   <th className="px-6 py-4 text-left text-gray-600">Student</th>
                   <th className="px-6 py-4 text-left text-gray-600">Doubts Asked</th>
@@ -365,54 +366,79 @@ export function ClassInsights({ filters, setFilters }: ClassInsightsProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredActivities.map((student, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 text-gray-800">{student.name}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <HelpCircle className="w-4 h-4 text-blue-500" />
-                        <span className="text-gray-700">{student.doubtsAsked}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Video className="w-4 h-4 text-green-500" />
-                        <span className="text-gray-700">{student.videosWatched}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-700">{student.timeSpent}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {student.strugglingWith.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {student.strugglingWith.map((topic, idx) => (
-                            <span key={idx} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
-                              {topic}
-                            </span>
-                          ))}
+                {filteredActivities.map((student, index) => {
+                  const isSelected = filters.students.length === 1 && filters.students[0] === student.name;
+                  return (
+                    <tr 
+                      key={index} 
+                      className={`transition-colors cursor-pointer ${
+                        isSelected ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-blue-50'
+                      }`}
+                      onClick={() => {
+                        // Toggle student filter
+                        if (isSelected) {
+                          setFilters({ ...filters, students: [] });
+                        } else {
+                          setFilters({ ...filters, students: [student.name] });
+                        }
+                      }}
+                      title={isSelected ? `Click to deselect ${student.name}` : `Click to filter by ${student.name}`}
+                    >
+                      <td className="px-6 py-4 text-gray-800">{student.name}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <HelpCircle className="w-4 h-4 text-blue-500" />
+                          <span className="text-gray-700">{student.doubtsAsked}</span>
                         </div>
-                      ) : (
-                        <span className="text-gray-400">None</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(student.status)}`}>
-                        {getStatusIcon(student.status)}
-                        <span className="capitalize">{student.status}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">{student.lastActivity}</td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Video className="w-4 h-4 text-green-500" />
+                          <span className="text-gray-700">{student.videosWatched}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-700">{student.timeSpent}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {student.strugglingWith.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {student.strugglingWith.map((topic, idx) => (
+                              <span 
+                                key={idx} 
+                                className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setFilters({ ...filters, topic, students: [student.name] });
+                                }}
+                                title={`Click to filter by ${topic}`}
+                              >
+                                {topic}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">None</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(student.status)}`}>
+                          {getStatusIcon(student.status)}
+                          <span className="capitalize">{student.status}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">{student.lastActivity}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="p-6">
+          <div className="p-6 max-h-[600px] overflow-y-auto">
             <EngagementScatterPlot filters={filters} />
           </div>
         )}

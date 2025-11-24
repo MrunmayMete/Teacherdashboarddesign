@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LayoutDashboard, MessageSquare, TrendingUp, BookOpen, FileText } from 'lucide-react';
+import { biologyTopics, students, queryData, noteData, contentScanData } from '../data/dashboardData';
 
 interface SidebarProps {
   filters: {

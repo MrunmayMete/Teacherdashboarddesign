@@ -225,7 +225,7 @@ export function QueryAnalysisPage({ filters }: QueryAnalysisPageProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            {/* Radar Chart */}
+            {/* Radar Chart - MADE INTERACTIVE */}
             <div className="flex items-center justify-center">
               <ResponsiveContainer width="100%" height={400}>
                 <RadarChart data={bloomsTaxonomyData}>
@@ -240,9 +240,12 @@ export function QueryAnalysisPage({ filters }: QueryAnalysisPageProps) {
                     dataKey="score" 
                     stroke="#8b5cf6" 
                     fill="#8b5cf6" 
-                    fillOpacity={0.6} 
+                    fillOpacity={0.6}
+                    cursor="pointer"
                   />
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
             </div>

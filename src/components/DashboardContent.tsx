@@ -3,6 +3,17 @@ import { TrendingUp, Users, BookOpen, Award, FileText, FileBarChart, MessageSqua
 import { ClassInsights } from './ClassInsights';
 import { Brain } from 'lucide-react';
 import { EngagementScatterPlot } from './EngagementScatterPlot';
+import { 
+  students, 
+  biologyTopics, 
+  queryData, 
+  noteData, 
+  contentScanData,
+  filterByTopic,
+  filterByStudent,
+  filterByLearningMode,
+  calculateMetrics
+} from '../data/dashboardData';
 
 interface DashboardContentProps {
   filters: {
@@ -257,12 +268,7 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
 
   return (
     <div className="flex-1 px-8 py-4">
-      {/* Class Insights - Individual Student Behavior on Top */}
-      <div className="mb-8">
-        <ClassInsights filters={filters} setFilters={setFilters} />
-      </div>
-
-      {/* Student-Specific Tile Inferences - Moved above Engagement Scatter Plot */}
+      {/* Student-Specific Tile Inferences - Moved to Top */}
       {tileInferences.show && (
         <div className="mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
           <div className="flex items-start gap-3 mb-4">
@@ -270,7 +276,7 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
             <div className="flex-1">
               <h3 className="text-indigo-900 mb-2">{tileInferences.title}</h3>
               <p className="text-indigo-700 mb-4">
-                AI-powered analysis based on Notes, Content Scanning, and Query patterns from the dashboard tiles above
+                AI-powered analysis based on Notes, Content Scanning, and Query patterns from the dashboard tiles below
               </p>
               
               <div className="space-y-4">
@@ -290,6 +296,11 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
           </div>
         </div>
       )}
+
+      {/* Class Insights - Individual Student Behavior */}
+      <div className="mb-8">
+        <ClassInsights filters={filters} setFilters={setFilters} />
+      </div>
 
       {/* New Dashboard Tiles */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -407,57 +418,7 @@ export function DashboardContent({ filters, setFilters }: DashboardContentProps)
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <StatCard
-          icon={<Users className="w-6 h-6" />}
-          title="Total Students"
-          value="30"
-          change="+2 from last week"
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
-        />
-        <StatCard
-          icon={<Users className="w-6 h-6" />}
-          title="Active Users"
-          value="24"
-          change="Currently online"
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-        />
-        <StatCard
-          icon={<Award className="w-6 h-6" />}
-          title="Assignments Due"
-          value="12"
-          change="3 pending review"
-          iconBg="bg-yellow-100"
-          iconColor="text-yellow-600"
-        />
-      </div>
-    </div>
-  );
-}
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-  change: string;
-  iconBg: string;
-  iconColor: string;
-}
-
-function StatCard({ icon, title, value, change, iconBg, iconColor }: StatCardProps) {
-  return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`${iconBg} ${iconColor} p-3 rounded-lg`}>
-          {icon}
-        </div>
-      </div>
-      <div className="text-gray-500 mb-1">{title}</div>
-      <div className="text-gray-900 mb-2">{value}</div>
-      <div className="text-gray-400">{change}</div>
+      {/* Stats Cards - Removed per user request */}
     </div>
   );
 }

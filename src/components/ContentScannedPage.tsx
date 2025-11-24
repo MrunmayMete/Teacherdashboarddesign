@@ -1,5 +1,6 @@
 import { Scan, Video, HelpCircle, CheckCircle, XCircle, AlertCircle, PieChart as PieChartIcon, Brain, MessageSquare } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BIOLOGY_TOPICS } from '../constants/biologyTopics';
 
 interface ContentScannedPageProps {
   filters: {
@@ -9,6 +10,7 @@ interface ContentScannedPageProps {
     topic: string | null;
     engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
+  setFilters: (filters: any) => void;
 }
 
 interface ContentItem {
@@ -29,78 +31,114 @@ const contentData: ContentItem[] = [
   {
     topic: 'Cell Structure',
     totalPages: 45,
-    scannedPages: 45,
-    queriesMade: 23,
-    videosWatched: 8,
+    scannedPages: 42,
+    queriesMade: 28,
+    videosWatched: 6,
     status: 'completed',
-    queryTypes: { doubts: 12, concepts: 6, questions: 5 }
+    queryTypes: { doubts: 8, concepts: 12, questions: 8 }
+  },
+  {
+    topic: 'Cell Division (Mitosis & Meiosis)',
+    totalPages: 52,
+    scannedPages: 38,
+    queriesMade: 45,
+    videosWatched: 8,
+    status: 'partial',
+    queryTypes: { doubts: 18, concepts: 15, questions: 12 }
+  },
+  {
+    topic: 'DNA & Genetics',
+    totalPages: 68,
+    scannedPages: 65,
+    queriesMade: 52,
+    videosWatched: 12,
+    status: 'completed',
+    queryTypes: { doubts: 20, concepts: 18, questions: 14 }
   },
   {
     topic: 'Photosynthesis',
     totalPages: 38,
-    scannedPages: 38,
-    queriesMade: 20,
-    videosWatched: 9,
-    status: 'completed',
-    queryTypes: { doubts: 8, concepts: 7, questions: 5 }
-  },
-  {
-    topic: 'Cell Division',
-    totalPages: 52,
-    scannedPages: 15,
-    queriesMade: 25,
-    videosWatched: 12,
+    scannedPages: 35,
+    queriesMade: 31,
+    videosWatched: 5,
     status: 'partial',
-    queryTypes: { doubts: 18, concepts: 4, questions: 3 }
+    queryTypes: { doubts: 12, concepts: 10, questions: 9 }
   },
   {
-    topic: 'DNA & Genetics',
-    totalPages: 48,
-    scannedPages: 42,
-    queriesMade: 28,
-    videosWatched: 10,
-    status: 'partial',
-    queryTypes: { doubts: 15, concepts: 8, questions: 5 }
-  },
-  {
-    topic: 'Human Anatomy',
-    totalPages: 55,
-    scannedPages: 0,
-    queriesMade: 0,
-    videosWatched: 0,
-    status: 'not-started',
-    queryTypes: { doubts: 0, concepts: 0, questions: 0 }
-  },
-  {
-    topic: 'Ecology',
-    totalPages: 40,
-    scannedPages: 0,
-    queriesMade: 0,
-    videosWatched: 0,
-    status: 'not-started',
-    queryTypes: { doubts: 0, concepts: 0, questions: 0 }
-  },
-  {
-    topic: 'Respiration',
+    topic: 'Cellular Respiration',
     totalPages: 42,
-    scannedPages: 42,
-    queriesMade: 18,
+    scannedPages: 40,
+    queriesMade: 36,
     videosWatched: 7,
     status: 'completed',
-    queryTypes: { doubts: 9, concepts: 5, questions: 4 }
+    queryTypes: { doubts: 14, concepts: 13, questions: 9 }
   },
   {
-    topic: 'Nervous System',
-    totalPages: 35,
+    topic: 'Protein Synthesis',
+    totalPages: 55,
     scannedPages: 28,
-    queriesMade: 16,
-    videosWatched: 6,
+    queriesMade: 58,
+    videosWatched: 10,
     status: 'partial',
-    queryTypes: { doubts: 10, concepts: 3, questions: 3 }
+    queryTypes: { doubts: 25, concepts: 20, questions: 13 }
+  },
+  {
+    topic: 'Evolution & Natural Selection',
+    totalPages: 60,
+    scannedPages: 15,
+    queriesMade: 22,
+    videosWatched: 4,
+    status: 'not-started',
+    queryTypes: { doubts: 10, concepts: 7, questions: 5 }
+  },
+  {
+    topic: 'Ecosystems & Biodiversity',
+    totalPages: 48,
+    scannedPages: 45,
+    queriesMade: 25,
+    videosWatched: 6,
+    status: 'completed',
+    queryTypes: { doubts: 8, concepts: 10, questions: 7 }
+  },
+  {
+    topic: 'Human Body Systems',
+    totalPages: 75,
+    scannedPages: 52,
+    queriesMade: 48,
+    videosWatched: 9,
+    status: 'partial',
+    queryTypes: { doubts: 18, concepts: 16, questions: 14 }
+  },
+  {
+    topic: 'Plant Biology',
+    totalPages: 40,
+    scannedPages: 38,
+    queriesMade: 20,
+    videosWatched: 5,
+    status: 'completed',
+    queryTypes: { doubts: 6, concepts: 8, questions: 6 }
+  },
+  {
+    topic: 'Microbiology & Viruses',
+    totalPages: 50,
+    scannedPages: 12,
+    queriesMade: 35,
+    videosWatched: 8,
+    status: 'not-started',
+    queryTypes: { doubts: 15, concepts: 12, questions: 8 }
+  },
+  {
+    topic: 'Enzymes & Metabolism',
+    totalPages: 45,
+    scannedPages: 30,
+    queriesMade: 42,
+    videosWatched: 7,
+    status: 'partial',
+    queryTypes: { doubts: 16, concepts: 15, questions: 11 }
   }
 ];
 
-export function ContentScannedPage({ filters }: ContentScannedPageProps) {
+export function ContentScannedPage({ filters, setFilters }: ContentScannedPageProps) {
   // Calculate metrics
   const totalContent = contentData.length;
   const completedContent = contentData.filter(c => c.status === 'completed').length;
@@ -212,11 +250,38 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="topic" stroke="#6b7280" />
             <YAxis stroke="#6b7280" />
-            <Tooltip />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+              cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+            />
             <Legend />
-            <Bar dataKey="doubts" fill="#ef4444" name="Asking Doubts" />
-            <Bar dataKey="concepts" fill="#3b82f6" name="Discussing Concepts" />
-            <Bar dataKey="questions" fill="#10b981" name="Solving Questions" />
+            <Bar 
+              dataKey="doubts" 
+              fill="#ef4444" 
+              name="Asking Doubts"
+              cursor="pointer"
+              onClick={(data) => {
+                setFilters({ ...filters, topic: data.topic });
+              }}
+            />
+            <Bar 
+              dataKey="concepts" 
+              fill="#3b82f6" 
+              name="Discussing Concepts"
+              cursor="pointer"
+              onClick={(data) => {
+                setFilters({ ...filters, topic: data.topic });
+              }}
+            />
+            <Bar 
+              dataKey="questions" 
+              fill="#10b981" 
+              name="Solving Questions"
+              cursor="pointer"
+              onClick={(data) => {
+                setFilters({ ...filters, topic: data.topic });
+              }}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -230,15 +295,15 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
             <ul className="space-y-2 text-blue-800">
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 mt-1">•</span>
-                <span><strong>Not Started:</strong> {notStartedContent} topics (Human Anatomy, Ecology) have not been accessed yet. Consider sending reminders or checking if these topics are in the curriculum.</span>
+                <span><strong>Not Started:</strong> {notStartedContent} topics (Evolution & Natural Selection, Microbiology & Viruses) have not been accessed yet. Consider sending reminders or checking if these topics are in the curriculum.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 mt-1">•</span>
-                <span><strong>High Engagement:</strong> Topics with both high scan rates and queries (Cell Structure, Respiration) show active learning. Students are engaged and seeking clarification.</span>
+                <span><strong>High Engagement:</strong> Topics with both high scan rates and queries (Cell Structure, Cellular Respiration) show active learning. Students are engaged and seeking clarification.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 mt-1">•</span>
-                <span><strong>Low Scan, High Queries:</strong> Cell Division has low scan percentage (29%) but high queries (25). Students may be jumping to specific sections when confused rather than studying systematically.</span>
+                <span><strong>Low Scan, High Queries:</strong> Cell Division has low scan percentage (73%) but high queries (45). Students may be jumping to specific sections when confused rather than studying systematically.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 mt-1">•</span>
@@ -319,48 +384,92 @@ export function ContentScannedPage({ filters }: ContentScannedPageProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {contentData.map((content, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-800">{content.topic}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-500"
-                          style={{ width: `${(content.scannedPages / content.totalPages) * 100}%` }}
-                        />
+              {contentData.map((content, index) => {
+                const isSelected = filters.topic === content.topic;
+                return (
+                  <tr 
+                    key={index} 
+                    className={`transition-colors cursor-pointer ${
+                      isSelected ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-blue-50'
+                    }`}
+                    onClick={() => {
+                      // Toggle topic filter
+                      if (isSelected) {
+                        setFilters({ ...filters, topic: null });
+                      } else {
+                        setFilters({ ...filters, topic: content.topic });
+                      }
+                    }}
+                    title={isSelected ? `Click to deselect ${content.topic}` : `Click to filter by ${content.topic}`}
+                  >
+                    <td className="px-6 py-4 text-gray-800 font-medium">{content.topic}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 transition-all"
+                            style={{ width: `${(content.scannedPages / content.totalPages) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-gray-600">{Math.round((content.scannedPages / content.totalPages) * 100)}%</span>
                       </div>
-                      <span className="text-gray-600">{Math.round((content.scannedPages / content.totalPages) * 100)}%</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">{content.scannedPages}/{content.totalPages}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-purple-500" />
-                      <span className="text-gray-700">{content.queriesMade}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Video className="w-4 h-4 text-red-500" />
-                      <span className="text-gray-700">{content.videosWatched}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-1 text-xs">
-                      <span className="px-2 py-1 bg-red-100 text-red-700 rounded">D: {content.queryTypes.doubts}</span>
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">C: {content.queryTypes.concepts}</span>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded">Q: {content.queryTypes.questions}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(content.status)}`}>
-                      {getStatusIcon(content.status)}
-                      <span className="capitalize">{content.status.replace('-', ' ')}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">{content.scannedPages}/{content.totalPages}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <HelpCircle className="w-4 h-4 text-purple-500" />
+                        <span className="text-gray-700">{content.queriesMade}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Video className="w-4 h-4 text-red-500" />
+                        <span className="text-gray-700">{content.videosWatched}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-1 text-xs">
+                        <span 
+                          className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Could filter by doubt queries in the future
+                          }}
+                          title="Asking Doubts"
+                        >
+                          D: {content.queryTypes.doubts}
+                        </span>
+                        <span 
+                          className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Could filter by concept queries in the future
+                          }}
+                          title="Discussing Concepts"
+                        >
+                          C: {content.queryTypes.concepts}
+                        </span>
+                        <span 
+                          className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Could filter by question queries in the future
+                          }}
+                          title="Solving Questions"
+                        >
+                          Q: {content.queryTypes.questions}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(content.status)}`}>
+                        {getStatusIcon(content.status)}
+                        <span className="capitalize">{content.status.replace('-', ' ')}</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

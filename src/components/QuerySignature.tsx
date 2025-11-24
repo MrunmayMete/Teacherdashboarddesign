@@ -8,9 +8,8 @@ interface QuerySignatureProps {
     class: string;
     subject: string;
     students: string[];
-    topic: string | null;
-    engagementLevel?: 'low' | 'medium' | 'high' | null;
   };
+  setFilters: (filters: { class: string; subject: string; students: string[] }) => void;
 }
 
 interface StudentQueryData {
@@ -38,7 +37,7 @@ const studentQueryData: StudentQueryData[] = [
 
 type SortKey = 'name' | 'queryVolume' | 'confusionClusters' | 'relevance';
 
-export function QuerySignature({ filters }: QuerySignatureProps) {
+export function QuerySignature({ filters, setFilters }: QuerySignatureProps) {
   const [sortBy, setSortBy] = useState<SortKey>('queryVolume');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [confusionFilter, setConfusionFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
@@ -423,12 +422,23 @@ export function QuerySignature({ filters }: QuerySignatureProps) {
               const basicPercent = Math.round((student.basic / student.queryVolume) * 100);
               const intermediatePercent = Math.round((student.intermediate / student.queryVolume) * 100);
               const advancedPercent = 100 - basicPercent - intermediatePercent;
+              const isSelected = filters.students.includes(student.name);
 
               return (
                 <tr 
                   key={index} 
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
-                  onClick={() => setSelectedStudent(student.name)}
+                  className={`transition-colors cursor-pointer ${
+                    isSelected ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-blue-50'
+                  }`}
+                  onClick={() => {
+                    // Toggle student filter
+                    if (isSelected) {
+                      setFilters({ ...filters, students: [] });
+                    } else {
+                      setFilters({ ...filters, students: [student.name] });
+                    }
+                  }}
+                  title={isSelected ? `Click to deselect ${student.name}` : `Click to filter by ${student.name}`}
                 >
                   <td className="px-4 py-3 text-gray-800">{student.name}</td>
                   <td className="px-4 py-3">

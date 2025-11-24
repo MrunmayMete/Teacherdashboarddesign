@@ -1,5 +1,7 @@
 import { ChevronDown, X, Check, Search, LogOut } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { students as allStudents } from '../data/dashboardData';
+import { BIOLOGY_TOPICS } from '../constants/biologyTopics';
 
 interface FilterBarProps {
   filters: {
@@ -18,8 +20,8 @@ interface FilterBarProps {
 
 const classes = ['All Classes', 'Grade 6A', 'Grade 6B', 'Grade 7A', 'Grade 7B', 'Grade 8A', 'Grade 8B'];
 const subjects = ['Biology'];
-const topics = ['All Topics', 'Cell Biology', 'Genetics', 'Evolution', 'Photosynthesis', 'Respiration', 'DNA Structure', 'Protein Synthesis', 'Mitosis', 'Meiosis', 'Ecosystems', 'Food Chains', 'Homeostasis'];
-const students = ['Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 'Ava Wilson', 'Ethan Martinez', 'Sophia Anderson', 'Mason Taylor'];
+const topics = ['All Topics', ...BIOLOGY_TOPICS];
+const students = allStudents.map(s => s.name);
 const learningModes = ['All', 'Classroom', 'Self-Learning'];
 
 export function FilterBar({ filters, setFilters, currentPage, setCurrentPage, onLogout }: FilterBarProps) {

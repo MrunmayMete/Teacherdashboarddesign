@@ -1,6 +1,7 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Users, Brain, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { BIOLOGY_TOPICS, ALL_STUDENTS } from '../constants/biologyTopics';
 
 interface EngagementScatterPlotProps {
   filters: {
@@ -20,28 +21,12 @@ interface StudentEngagementData {
   topicIndex: number;
 }
 
-// Biology topics
-const biologyTopics = [
-  'Cell Biology',
-  'Genetics',
-  'Evolution',
-  'Photosynthesis',
-  'Respiration',
-  'DNA Structure',
-  'Ecosystems'
-];
-
-const allStudents = [
-  'Emma Johnson', 'Liam Smith', 'Olivia Brown', 'Noah Davis', 
-  'Ava Wilson', 'Ethan Martinez', 'Sophia Anderson', 'Mason Taylor'
-];
-
 // Generate engagement data for each student across topics
 const generateEngagementData = (studentNames: string[]): StudentEngagementData[] => {
   const data: StudentEngagementData[] = [];
   
   studentNames.forEach((student) => {
-    biologyTopics.forEach((topic, topicIndex) => {
+    BIOLOGY_TOPICS.forEach((topic, topicIndex) => {
       // Generate varied engagement levels (20-95%) for each student-topic combination
       const baseEngagement = 40 + Math.random() * 55;
       const engagement = Math.round(baseEngagement);
@@ -67,7 +52,7 @@ export function EngagementScatterPlot({ filters, setFilters }: EngagementScatter
   // Filter students based on dashboard filters
   const selectedStudents = filters.students.length > 0 
     ? filters.students 
-    : allStudents;
+    : ALL_STUDENTS;
   
   const engagementData = generateEngagementData(selectedStudents);
   
@@ -102,7 +87,7 @@ export function EngagementScatterPlot({ filters, setFilters }: EngagementScatter
     const insights = [];
     
     // Analyze by topic
-    const topicAverages = biologyTopics.map(topic => {
+    const topicAverages = BIOLOGY_TOPICS.map(topic => {
       const topicData = filteredData.filter(d => d.topic === topic);
       const avg = topicData.length > 0 
         ? topicData.reduce((sum, d) => sum + d.engagement, 0) / topicData.length 
@@ -439,17 +424,33 @@ export function EngagementScatterPlot({ filters, setFilters }: EngagementScatter
             <Scatter 
               data={filteredData} 
               shape="circle"
+              onClick={(data) => {
+                if (data && data.student) {
+                  // Toggle student filter - if already selected, deselect
+                  if (setFilters) {
+                    const isAlreadySelected = filters.students.length === 1 && filters.students[0] === data.student;
+                    if (isAlreadySelected) {
+                      setFilters({ ...filters, students: [] });
+                    } else {
+                      setFilters({ ...filters, students: [data.student], topic: data.topic });
+                    }
+                  }
+                }
+              }}
             >
               {filteredData.map((entry, index) => {
                 const color = getEngagementColor(entry.engagement);
+                const isSelected = filters.students.includes(entry.student) && 
+                                   (filters.topic === entry.topic || !filters.topic);
                 return (
                   <Cell 
                     key={`cell-${index}`} 
                     fill={color}
-                    r={5}
-                    stroke="#fff"
-                    strokeWidth={1.5}
+                    r={isSelected ? 8 : 5}
+                    stroke={isSelected ? '#1f2937' : '#fff'}
+                    strokeWidth={isSelected ? 3 : 1.5}
                     style={{ cursor: 'pointer' }}
+                    opacity={isSelected ? 1 : 0.85}
                   />
                 );
               })}

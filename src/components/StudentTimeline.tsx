@@ -181,33 +181,33 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
         </div>
 
         {/* Insights Summary */}
-        <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-          <h3 className="text-gray-800 mb-3 flex items-center gap-2">
-            <Info className="w-5 h-5 text-blue-600" />
+        <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+          <h5 className="text-gray-800 mb-2 flex items-center gap-1.5">
+            <Info className="w-4 h-4 text-blue-600" />
             Key Insights
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          </h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             {insights.map((insight, index) => (
-              <div key={index} className="bg-white p-3 rounded-lg border border-gray-200">
-                <p className="text-gray-700">{insight}</p>
+              <div key={index} className="bg-white p-2 rounded-lg border border-gray-200">
+                <p className="text-gray-700 text-sm">{insight}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Timeline */}
-        <div className="p-6">
-          <h3 className="text-gray-800 mb-4">Activity Timeline</h3>
+        <div className="p-4">
+          <h4 className="text-gray-800 mb-3">Activity Timeline</h4>
           
           {/* Time markers */}
-          <div className="mb-2 flex justify-between text-xs text-gray-500 px-1">
+          <div className="mb-1 flex justify-between text-xs text-gray-500 px-1">
             <span>{segments[0]?.startTime}</span>
             <span>{segments[segments.length - 1]?.endTime}</span>
           </div>
 
           {/* Timeline bar */}
-          <div className="relative mb-8">
-            <div className="flex h-16 rounded-lg overflow-hidden border border-gray-300 shadow-sm">
+          <div className="relative mb-6">
+            <div className="flex h-12 rounded-lg overflow-hidden border border-gray-300 shadow-sm">
               {segments.map((segment, index) => {
                 const widthPercent = (segment.duration / totalMinutes) * 100;
                 const config = activityConfig[segment.activity];
@@ -221,15 +221,15 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
                     onMouseLeave={() => setHoveredSegment(null)}
                   >
                     {segment.duration > 15 && (
-                      <span className="text-white text-xs font-medium">{segment.duration}m</span>
+                      <span className="text-white text-xs">{segment.duration}m</span>
                     )}
                     
                     {/* Tooltip */}
                     {hoveredSegment === index && (
-                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap z-20 shadow-lg">
-                        <div className="font-medium mb-1">{config.label}</div>
+                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-1.5 px-2.5 whitespace-nowrap z-20 shadow-lg">
+                        <div className="mb-0.5">{config.label}</div>
                         <div>{segment.startTime} - {segment.endTime}</div>
-                        <div className="text-gray-300 mt-1">{segment.details}</div>
+                        <div className="text-gray-300 mt-0.5">{segment.details}</div>
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                       </div>
                     )}
@@ -247,16 +247,16 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
               return (
                 <div
                   key={index}
-                  className="absolute -bottom-6 transform -translate-x-1/2 cursor-pointer group"
+                  className="absolute -bottom-5 transform -translate-x-1/2 cursor-pointer group"
                   style={{ left: `${position}%` }}
                 >
                   <div className={`${config.bgColor} ${config.color} p-1 rounded-full shadow-md`}>
-                    <config.icon className="w-4 h-4" />
+                    <config.icon className="w-3 h-3" />
                   </div>
                   
                   {/* Event tooltip */}
-                  <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-lg">
-                    <div className="font-medium">{event.time}</div>
+                  <div className="absolute top-full mt-1.5 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg py-1.5 px-2.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-lg">
+                    <div>{event.time}</div>
                     <div className="text-gray-300">{event.description}</div>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-900"></div>
                   </div>
@@ -266,26 +266,26 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
           </div>
 
           {/* Legend */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h4 className="text-gray-700 mb-3">Activity Types</h4>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <div className="mt-5 pt-4 border-t border-gray-200">
+            <h5 className="text-gray-700 mb-2">Activity Types</h5>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4">
               {Object.entries(activityConfig).map(([key, config]) => (
-                <div key={key} className="flex items-center gap-2">
-                  <div className={`w-4 h-4 rounded ${config.color}`}></div>
-                  <span className="text-gray-700">{config.label}</span>
-                  <span className="text-gray-500">({activityTotals[key] || 0}m)</span>
+                <div key={key} className="flex items-center gap-1.5">
+                  <div className={`w-3 h-3 rounded ${config.color}`}></div>
+                  <span className="text-gray-700 text-sm">{config.label}</span>
+                  <span className="text-gray-500 text-xs">({activityTotals[key] || 0}m)</span>
                 </div>
               ))}
             </div>
 
-            <h4 className="text-gray-700 mb-3">Event Markers</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h5 className="text-gray-700 mb-2">Event Markers</h5>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {Object.entries(eventConfig).map(([key, config]) => (
-                <div key={key} className="flex items-center gap-2">
-                  <div className={`${config.bgColor} ${config.color} p-1 rounded-full`}>
-                    <config.icon className="w-3 h-3" />
+                <div key={key} className="flex items-center gap-1.5">
+                  <div className={`${config.bgColor} ${config.color} p-0.5 rounded-full`}>
+                    <config.icon className="w-2.5 h-2.5" />
                   </div>
-                  <span className="text-gray-700 capitalize">{key.replace('-', ' ')}</span>
+                  <span className="text-gray-700 text-sm capitalize">{key.replace('-', ' ')}</span>
                 </div>
               ))}
             </div>
@@ -293,21 +293,21 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
 
           {/* Detailed Event List */}
           {events.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="text-gray-700 mb-3">Event Details</h4>
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <h5 className="text-gray-700 mb-2">Event Details</h5>
               <div className="space-y-2">
                 {events.map((event, index) => {
                   const config = eventConfig[event.type];
                   return (
-                    <div key={index} className={`${config.bgColor} p-3 rounded-lg flex items-start gap-3`}>
+                    <div key={index} className={`${config.bgColor} p-2.5 rounded-lg flex items-start gap-2`}>
                       <div className={`${config.color} flex-shrink-0`}>
-                        <config.icon className="w-5 h-5" />
+                        <config.icon className="w-4 h-4" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-gray-800">{event.time}</span>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-gray-800 text-sm">{event.time}</span>
                           {event.severity && (
-                            <span className={`text-xs px-2 py-0.5 rounded ${
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${
                               event.severity === 'high' ? 'bg-red-200 text-red-700' :
                               event.severity === 'medium' ? 'bg-yellow-200 text-yellow-700' :
                               'bg-green-200 text-green-700'
@@ -316,7 +316,7 @@ export function StudentTimeline({ studentName, onClose }: StudentTimelineProps) 
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-700">{event.description}</p>
+                        <p className="text-gray-700 text-sm">{event.description}</p>
                       </div>
                     </div>
                   );

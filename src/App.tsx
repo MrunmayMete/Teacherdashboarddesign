@@ -70,11 +70,11 @@ export default function App() {
           ) : currentPage === 'queries' ? (
             <QueryAnalysisPage filters={filters} />
           ) : currentPage === 'performance' ? (
-            <PerformancePage filters={filters} />
+            <PerformancePage filters={filters} setFilters={setFilters} />
           ) : currentPage === 'content' ? (
-            <ContentScannedPage filters={filters} />
+            <ContentScannedPage filters={filters} setFilters={setFilters} />
           ) : (
-            <NotesPage filters={filters} />
+            <NotesPage filters={filters} setFilters={setFilters} />
           )}
         </div>
       </div>
